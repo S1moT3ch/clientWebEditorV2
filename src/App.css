@@ -1,0 +1,16 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.craft-node {
+    position: relative;
+    padding: 10px;
+}
+
+.craft-node.drop-not-allowed {
+    border-top: 5px solid red;
+    transition: border 0.2s ease-in-out;
+}
