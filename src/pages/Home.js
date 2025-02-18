@@ -1,5 +1,6 @@
 import React from 'react';
 import {Typography, Paper, Grid} from '@mui/material';
+import "../App.css"
 
 
 import { Toolbox } from '../components/Toolbox';
@@ -7,8 +8,9 @@ import { Settings } from '../components/Settings';
 import { Container } from '../components/Container';
 import { Button } from '../components/Button';
 import { Text } from '../components/Text';
-import { Card } from '../components/Card';
+import { Card, CardTop, CardBottom} from '../components/Card';
 import { Topbar } from '../components/Topbar';
+
 
 import { Editor, Frame, Element} from "@craftjs/core";
 
@@ -26,21 +28,19 @@ import { Editor, Frame, Element} from "@craftjs/core";
 export default function App() {
         return (
             <div style={{margin: "auto"}}>
-                <Editor resolver={{Card, Button, Text, Container}}>
+                <Editor resolver={{Card, Button, Text, Container, CardTop, CardBottom}}>
                     <Grid container spacing={3}>
                         <Grid item xs>
                             <Typography variant="h5" align="center" mt="10px">A super simple page editor</Typography>
                             <Topbar />
-                            <Frame>
-                                <Element is={Container} padding={16} background="#eee" canvas>
-                                    <Card />
-                                    <Button size="large" variant="outlined">Ciao</Button>
-                                    <Text size="small" text="Hi world!" />
-                                    <Element is={Container} padding={6} background="#999" canvas>
+                                <Frame id="container">
+                                    <Element is={Container}  padding={16} background="#eee" canvas>
+                                        <Card />
+                                        <Button size="medium" variant="contained">Ciao</Button>
+                                        <Text size="small" text="Hi world!" />
                                         <Text size="small"  text="It's me again!" />
                                     </Element>
-                                </Element>
-                            </Frame>
+                                </Frame>
                             </Grid>
                         <Grid item xs={2} mr={3} mt="65px" >
                             <Paper>

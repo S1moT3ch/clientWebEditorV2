@@ -14,3 +14,16 @@
     border-top: 5px solid red;
     transition: border 0.2s ease-in-out;
 }
+
+.button-only {
+    min-height: 50px;
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+}

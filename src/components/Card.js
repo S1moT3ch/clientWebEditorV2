@@ -1,23 +1,73 @@
 import React  from "react";
 import { Text } from "./Text";
 import { Button } from "./Button";
-import { Container } from "./Container";
-import {display} from "@mui/system";
+import {Container, ContainerSettings} from "./Container";
+import { Element } from "@craftjs/core";
+import { useNode } from "@craftjs/core";
+import "../App.css"
 
 // questo componente sarà composto dal componente container
 //e presenterà delle regioni dove potremo droppare gli altri componenti
 
 //non ho bisogno di modificare il componente card in quanto è composto dei componenti  a cui abbiamo applicato già i connettori
+export const CardTop = ({children}) => {
+    const ref = useNode(null)
+    const { connectors: {connect} } = useNode();
+    return (
+        <div ref = {el => {
+             ref.current = el;
+             connect(el)}}
+             className="text-only">
+             {children}
+        </div>
+    )
+}
+
+CardTop.craft = {
+    rules: {
+        // Only accept Text
+        canMoveIn: (incomingNodes) => incomingNodes.every(incomingNode => incomingNode.data.type === Text)
+    }
+}
+
+export const CardBottom = ({children}) => {
+    const ref = useNode(null)
+    const { connectors: {connect} } = useNode();
+    return (
+        <div ref = {el => {
+             ref.current = el;
+             connect(el)}}
+             className="button-only"
+             >
+             {children ? children : "   "}
+        </div>
+    )
+}
+
+CardBottom.craft = {
+    rules: {
+        // Only accept Buttons
+        canMoveIn : (incomingNodes) => incomingNodes.every(incomingNode => incomingNode.data.type === Button)
+    }
+}
+
 export const Card = ({background, padding = 20}) => {
     return (
-        <Container background={background} padding={padding} >
-            <div className="text-only">
-                <Text text="Titolo" fontSize={16}/>
-                <Text text="Paragrafo" fontSize={10}/>
-            </div>
-            <div className="button-only">
-                <Button size="small" color="primary" variant="contained">Clicca Qui</Button>
-            </div>
+        <Container background={background} padding={padding}>
+            <Element id="text" is={CardTop} canvas> //Canvas è un container che permette di droppare elementi al suo interno in questo caso solo testo
+                <Text text="Title" fontSize={20} />
+                <Text text="Subtitle" fontSize={15} />
+            </Element>
+            <Element id="button" is={CardBottom} canvas> //Canvas è un container che permette di droppare elementi al suo interno in questo caso solo bottoni
+                <Button size="medium" variant="contained" children="Learn more" />
+            </Element>
         </Container>
     )
+}
+
+Card.craft = {
+    related: {
+        // Since Card has the same settings as Container, we'll just reuse ContainerSettings
+        settings: ContainerSettings
+    }
 }
