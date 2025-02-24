@@ -1,7 +1,7 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Typography, Paper, Grid} from '@mui/material';
 import "../App.css"
-
+import { Box } from '@mui/system';
 
 import { Toolbox } from '../components/Toolbox';
 import { Settings } from '../components/Settings';
@@ -10,6 +10,8 @@ import { Button } from '../components/Button';
 import { Text } from '../components/Text';
 import { Card, CardTop, CardBottom} from '../components/Card';
 import { Topbar } from '../components/Topbar';
+import { ImageUpload } from '../components/ImageUpload';
+import "../App.css"
 
 
 import { Editor, Frame, Element} from "@craftjs/core";
@@ -26,23 +28,27 @@ import { Editor, Frame, Element} from "@craftjs/core";
 //come i componenti all'interno , saranno draggable.
 
 export default function App() {
+
+    const [uploadedImage, setUploadedImage] = useState(null);
+
+
         return (
-            <div style={{margin: "auto"}}>
-                <Editor resolver={{Card, Button, Text, Container, CardTop, CardBottom}}>
-                    <Grid container spacing={3}>
-                        <Grid item xs>
+            <div>
+                <Editor  resolver={{Card, Button, Text, Container, CardTop, CardBottom, Paper}}>
+                    <Grid container spacing={3} margin={0.5} style={{ display: "flex", flexWrap: "nowrap"}} >
+                        <Grid item xs style={{maxWidth:"100%", overflow:"hidden"}}>
                             <Typography variant="h5" align="center" mt="10px">A super simple page editor</Typography>
                             <Topbar />
-                                <Frame id="container">
-                                    <Element is={Container}  padding={16} background="#eee" canvas>
-                                        <Card />
+                                <Frame>
+                                    <Element is={Container}  padding={16} background="#eee" canvas >
+                                        <Card/>
                                         <Button size="medium" variant="contained">Ciao</Button>
                                         <Text size="small" text="Hi world!" />
                                         <Text size="small"  text="It's me again!" />
                                     </Element>
                                 </Frame>
                             </Grid>
-                        <Grid item xs={2} mr={3} mt="65px" >
+                        <Grid item xs={2} mr={3} mt="65px">
                             <Paper>
                                 <Toolbox />
                                 <Settings />

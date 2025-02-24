@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useState, useRef} from "react";
 //rendo l'elemento draggable e droppable tramite l'useNode hook di craftjs
 import {useNode} from "@craftjs/core";
 import ContentEditable from "react-contenteditable";
@@ -16,10 +16,7 @@ export const Text = ({text, fontSize, color}) => {
 
     const {
         connectors: {connect, drag},
-        isHovering,
-        isDroppable,
         hasSelectedNode,
-        hasDraggedNode,
         actions: {setProp}} = useNode((state) => ({
         hasSelectedNode: state.events.selected,
         hasDraggedNode: state.events.dragged
@@ -27,7 +24,7 @@ export const Text = ({text, fontSize, color}) => {
 
     const ref = useRef(null);
 
-    const [editable, setEditable] = React.useState(false);
+    const [editable, setEditable] = useState(false);
 
     //se non ho selezionato nessun nodo imposta editable a false quindi non posso modificare nulla
     //triggero l'effetto ogni volta che cambia hasSelectedNode
@@ -39,18 +36,22 @@ export const Text = ({text, fontSize, color}) => {
         <div ref={el => {
             ref.current = el;
             connect(drag(el))
-        }} className={`craft-node ${isHovering && !isDroppable ? "drop-not-allowed" : ""}`}
-        >
+        }} className="text-comp">
             <ContentEditable
                 html={text}
-                onChange={e =>
-                    setProp(props =>
-                        props.text = e.target.value.replace(/<\/?[^>]+(>|$)/g, "")
-                    )
-                }
-                tagName="p"
-                style={{fontSize: `${fontSize}px`, color, textAlign}}
+                onChange={(e) => {
+                    setProp(props => props.text = e.target.value);
+                }}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault(); // Evita il comportamento predefinito
+                        setProp(props => props.text += "<br>"); // Aggiunge un line break
+                    }
+                }}
+                tagName="div" // Usa <div> per supportare i <br>
+                style={{ fontSize: `${fontSize}px`, color, textAlign, whiteSpace: "pre-line" }} // "pre-line" mantiene i \n
             />
+
         </div>
     )
 }

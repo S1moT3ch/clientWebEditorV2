@@ -1,9 +1,10 @@
 import React  from "react";
 import { Text } from "./Text";
 import { Button } from "./Button";
-import {Container, ContainerSettings} from "./Container";
+import {Container, ContainerDefaultProps, ContainerSettings} from "./Container";
 import { Element } from "@craftjs/core";
 import { useNode } from "@craftjs/core";
+import {Paper} from "@mui/material";
 import "../App.css"
 
 // questo componente sarà composto dal componente container
@@ -17,8 +18,9 @@ export const CardTop = ({children}) => {
         <div ref = {el => {
              ref.current = el;
              connect(el)}}
-             className="text-only">
-             {children}
+             className="text-only"
+             >
+             {children ? children : <Text text=" "/>}
         </div>
     )
 }
@@ -39,7 +41,7 @@ export const CardBottom = ({children}) => {
              connect(el)}}
              className="button-only"
              >
-             {children ? children : "   "}
+             {children ? children : ""}
         </div>
     )
 }
@@ -53,7 +55,7 @@ CardBottom.craft = {
 
 export const Card = ({background, padding = 20}) => {
     return (
-        <Container background={background} padding={padding}>
+        <Container className="card" background={background} padding={padding} >
             <Element id="text" is={CardTop} canvas> //Canvas è un container che permette di droppare elementi al suo interno in questo caso solo testo
                 <Text text="Title" fontSize={20} />
                 <Text text="Subtitle" fontSize={15} />
@@ -68,6 +70,7 @@ export const Card = ({background, padding = 20}) => {
 Card.craft = {
     related: {
         // Since Card has the same settings as Container, we'll just reuse ContainerSettings
-        settings: ContainerSettings
+        settings: ContainerSettings,
+        props: ContainerDefaultProps
     }
 }

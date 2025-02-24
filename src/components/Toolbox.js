@@ -1,39 +1,77 @@
-//questo toolbox permetterà all'utente di creare nuove istanze dei componenti definiti
-//mediante drag and drop
-//ci aiuteranno i componenti predefiniti di material ui come grid
-
 import React from "react";
-import { Box, Typography, Grid, Button as MaterialButton} from  "@mui/material";
-import {useEditor, Element} from "@craftjs/core";
-
-import {Button} from "./Button";
-import {Text} from "./Text";
-import {Container} from "./Container";
-import {Card} from "./Card";
-
-//ora vado ad implementare la toolbox , che creerà nuove istanze dei componenti definiti
+import { Box, Typography, Grid, Button as MaterialButton } from "@mui/material";
+import {Element} from "@craftjs/core"
+import { useEditor } from "@craftjs/core";
+import { ImageUpload } from "./ImageUpload";
+import { Button } from "./Button";
+import { Text } from "./Text";
+import { Container } from "./Container";
+import { Card } from "./Card";
 
 export const Toolbox = () => {
-    const { connectors, query } = useEditor();
+    const { connectors, actions, query } = useEditor();
+
+    const handleImageUpload = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const imageElement = <ImageUpload src={e.target.result} width={200} height={200} />;
+                const nodeTree = query.parseReactElement(imageElement);
+                actions.addNodeTree(nodeTree); // Inserisce il nodo in cima a tutti
+            };
+            reader.readAsDataURL(file);
+            console.log(file)
+
+        }
+    };
+
+
     return (
-        <Box px={2} py={2}>
-            <Grid container direction = "column" alignItems="center" justify="center" spacing={2}>
-                <Box>
-                    <Typography>Drag to add</Typography>
-                </Box>
-            <Grid container direction="column" item>
-                <MaterialButton ref={ref => connectors.create(ref, <Button />)} variant="contained">Button</MaterialButton>
-            </Grid>
-            <Grid container direction="column" item>
-                <MaterialButton ref={ref => connectors.create(ref, <Text />)} variant="contained">Text</MaterialButton>
-            </Grid>
-            <Grid container direction="column" item>
-                <MaterialButton ref={ref => connectors.create(ref, <Container padding={30} background="#eee" canvas/>)} variant="contained">Container</MaterialButton>
-            </Grid>
-            <Grid container direction="column" item>
-                <MaterialButton ref={ref => connectors.create(ref, <Card />)} variant="contained">Card</MaterialButton>
-            </Grid>
+        <Box className="right-panel" >
+            <Grid container direction="column" alignItems="center" spacing={2} mt={2}>
+                <Typography>Drag to add</Typography>
+                <Grid container direction="column" item>
+                    <MaterialButton ref={(ref) => connectors.create(ref, <Button />)} variant="contained">
+                        Button
+                    </MaterialButton>
+                </Grid>
+                <Grid container direction="column" item>
+                    <MaterialButton ref={(ref) => connectors.create(ref, <Text />)} variant="contained">
+                        Text
+                    </MaterialButton>
+                </Grid>
+                <Grid container direction="column" item>
+                    <MaterialButton
+                        ref={(ref) =>
+                            connectors.create(ref, <Element is={Container} padding={30} background="#eee" canvas />)
+                        }
+                        variant="contained"
+                    >
+                        Container
+                    </MaterialButton>
+                </Grid>
+                <Grid container direction="column" item>
+                    <MaterialButton ref={(ref) => connectors.create(ref, <Card />)} variant="contained">
+                        Card
+                    </MaterialButton>
+                </Grid>
+                {/* Pulsante per l'upload dell'immagine */}
+                <Grid container direction="column" item>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        style={{ display: "none" }}
+                        id="image-upload"
+                    />
+                    <label htmlFor="image-upload">
+                        <MaterialButton component="span" variant="contained" fullWidth>
+                            Upload Image
+                        </MaterialButton>
+                    </label>
+                </Grid>
             </Grid>
         </Box>
-    )
-}
+    );
+};

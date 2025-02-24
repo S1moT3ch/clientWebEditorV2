@@ -1,7 +1,9 @@
 import React, {useRef} from "react";
 import {FormControl, Paper, Slider, FormLabel} from "@mui/material";
+import Element from "@craftjs/core";
 import {useNode} from "@craftjs/core";
 import {HexColorPicker} from "react-colorful";
+import "../App.css"
 
 
 
@@ -12,19 +14,19 @@ export const Container = ({background, padding = 0, children}) => {
     const {connectors : {connect, drag}} = useNode();
     const ref = useRef(null);
     return (
-        <Paper ref = {el =>{
-            ref.current = el;
-            connect(drag(el))}}
-               style={{margin: "5px 0", background, padding: `${padding}px`}}>
-            {children}
-        </Paper>
+            <Paper  className="base-container"  ref = {el =>{
+                ref.current = el;
+                connect(drag(el))}}
+                   style={{margin: "5px 0", background, padding: `${padding}px`, minWidth:"150px"}}>
+                {children}
+            </Paper>
     )
 };
 
 export const ContainerSettings = () => {
     const { background, padding, actions: {setProp} } = useNode((node) => ({
         background: node.data.props.background,
-        padding: node.data.props.padding
+        padding: node.data.props.padding,
     }));
 
     return (
@@ -54,6 +56,12 @@ Container.craft = {
         settings: ContainerSettings
 
     }
+}
+
+//esporto poichè mi serve in card
+export const ContainerDefaultProps = {
+    background: "#fff",
+    padding: 0,
 }
 
 

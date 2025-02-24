@@ -3,6 +3,7 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
+
 }
 
 .craft-node {
@@ -10,20 +11,42 @@
     padding: 10px;
 }
 
-.craft-node.drop-not-allowed {
-    border-top: 5px solid red;
-    transition: border 0.2s ease-in-out;
-}
-
 .button-only {
     min-height: 50px;
     display: flex;
     flex-direction: row;
     gap: 16px;
+
 }
 
-.container {
-    display: flex;
-    flex-direction: row;
-    gap: 16px;
+:root{
+    --flex-direction: column;
 }
+.base-container {
+    flex-direction: var(--flex-direction);
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+}
+
+.base-container > * {
+    flex-shrink: 0;
+}
+
+
+.right-panel {
+    align-content: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px;
+    background-color: rgba(0,0,0,0.06);
+}
+
+.button-only {
+    min-width: 50px;
+    display: flex;
+}
+
+
