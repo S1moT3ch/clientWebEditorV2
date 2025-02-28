@@ -32,6 +32,8 @@ export const Text = ({text, fontSize, color}) => {
     useEffect(() => {
         !hasSelectedNode && setEditable(false);
     }, [hasSelectedNode]);
+
+
     return (
         <div ref={el => {
             ref.current = el;
@@ -45,10 +47,10 @@ export const Text = ({text, fontSize, color}) => {
                 onKeyDown={(e) => {
                     if (e.key === "Enter") {
                         e.preventDefault(); // Evita il comportamento predefinito
-                        setProp(props => props.text += "<br>"); // Aggiunge un line break
+                        setProp(props => props.text += "\n" +
+                            "");// Aggiunge un line break
                     }
                 }}
-                tagName="div" // Usa <div> per supportare i <br>
                 style={{ fontSize: `${fontSize}px`, color, textAlign, whiteSpace: "pre-line" }} // "pre-line" mantiene i \n
             />
 

@@ -2,6 +2,7 @@ import React, {useRef, useState} from "react";
 import {Button as MaterialButton, FormControl, FormControlLabel, FormLabel, RadioGroup, Radio, TextField } from "@mui/material";
 import {useNode} from "@craftjs/core";
 import { Resizable } from "react-resizable";
+import {flexbox, lineHeight, spacing} from "@mui/system";
 //variant di material-ui può essere : "text", "outlined", "contained"
 //ho sostituito childreno con text che sono la stessa cosa
 
@@ -26,13 +27,13 @@ const ButtonSettings = () => {
     }));
 
     return (
-        <div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "25px" }}>
             <FormControl size="small" component="fieldset">
-                <FormLabel component="legend">Text</FormLabel>
+                <FormLabel component="legend" className="custom-label">Text</FormLabel>
                 <TextField defaultValue={props.children} onChange={(e) => setProp(props => props.children = e.target.value )}/>
             </FormControl>
             <FormControl size="small" component="fieldset">
-                <FormLabel component="legend">Size</FormLabel>
+                <FormLabel component="legend" className="custom-label">Size</FormLabel>
                 <RadioGroup defaultValue={props.size} onChange={(e) => setProp(props => props.size = e.target.value )}>
                     <FormControlLabel label="Small" value="small" control={<Radio size="small" color="primary" />} />
                     <FormControlLabel label="Medium" value="medium" control={<Radio size="small" color="primary" />} />
@@ -40,7 +41,7 @@ const ButtonSettings = () => {
                 </RadioGroup>
             </FormControl>
             <FormControl component="fieldset">
-                <FormLabel component="legend">Variant</FormLabel>
+                <FormLabel component="legend" className="custom-label">Variant</FormLabel>
                 <RadioGroup defaultValue={props.variant} onChange={(e) => setProp(props => props.variant = e.target.value )}>
                     <FormControlLabel label="Text" value="text" control={<Radio size="small" color="primary" />} />
                     <FormControlLabel label="Outlined" value="outlined" control={<Radio size="small" color="primary" />} />
@@ -48,7 +49,7 @@ const ButtonSettings = () => {
                 </RadioGroup>
             </FormControl>
             <FormControl component="fieldset">
-                <FormLabel component="legend">Color</FormLabel>
+                <FormLabel component="legend" className="custom-label">Color</FormLabel>
                 <RadioGroup defaultValue={props.color} onChange={(e) => setProp(props => props.color = e.target.value )}>
                     <FormControlLabel label="Default" value="default" control={<Radio size="small" color="default" />} />
                     <FormControlLabel label="Primary" value="primary" control={<Radio size="small" color="primary" />} />

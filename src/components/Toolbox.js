@@ -7,6 +7,7 @@ import { Button } from "./Button";
 import { Text } from "./Text";
 import { Container } from "./Container";
 import { Card } from "./Card";
+import "../App.css";
 
 export const Toolbox = () => {
     const { connectors, actions, query } = useEditor();
@@ -29,47 +30,27 @@ export const Toolbox = () => {
 
     return (
         <Box className="right-panel" >
-            <Grid container direction="column" alignItems="center" spacing={2} mt={2}>
-                <Typography>Drag to add</Typography>
+            <Grid container direction="column" alignItems="center" rowSpacing={2}>
+                <h2 className="custom-typography" >Drag to add</h2>
                 <Grid container direction="column" item>
-                    <MaterialButton ref={(ref) => connectors.create(ref, <Button />)} variant="contained">
+                    <MaterialButton className="tool-btn" ref={(ref) => connectors.create(ref, <Button />)} fullWidth variant="contained">
                         Button
                     </MaterialButton>
                 </Grid>
                 <Grid container direction="column" item>
-                    <MaterialButton ref={(ref) => connectors.create(ref, <Text />)} variant="contained">
+                    <MaterialButton className="tool-btn" ref={(ref) => connectors.create(ref, <Text />)} fullWidth variant="contained">
                         Text
                     </MaterialButton>
                 </Grid>
                 <Grid container direction="column" item>
-                    <MaterialButton
-                        ref={(ref) =>
-                            connectors.create(ref, <Element is={Container} padding={30} background="#eee" canvas />)
-                        }
-                        variant="contained"
-                    >
+                    <MaterialButton  className="tool-btn" ref={(ref) => connectors.create(ref, <Element is={Container} padding={30} background="#eee" canvas />)} fullWidth variant="contained">
                         Container
                     </MaterialButton>
                 </Grid>
                 <Grid container direction="column" item>
-                    <MaterialButton ref={(ref) => connectors.create(ref, <Card />)} variant="contained">
+                    <MaterialButton className="tool-btn" ref={(ref) => connectors.create(ref, <Card />)} fullWidth variant="contained">
                         Card
                     </MaterialButton>
-                </Grid>
-                {/* Pulsante per l'upload dell'immagine */}
-                <Grid container direction="column" item>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        style={{ display: "none" }}
-                        id="image-upload"
-                    />
-                    <label htmlFor="image-upload">
-                        <MaterialButton component="span" variant="contained" fullWidth>
-                            Upload Image
-                        </MaterialButton>
-                    </label>
                 </Grid>
             </Grid>
         </Box>

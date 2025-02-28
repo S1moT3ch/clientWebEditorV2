@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {Box, Chip, Grid, Typography, Button as MaterialButton, FormControl, Slider, FormLabel} from "@mui/material";
 import {useEditor} from "@craftjs/core";
+import "../App.css"
 
 
 //qui l'utente potrà modificare i componenti definiti
@@ -50,9 +51,9 @@ export const Settings = () => {
                 }
                 {
                     selected.isDeletable ? (
-                        <MaterialButton
+                        <MaterialButton style={{marginTop: "30px"}}
                             variant="contained"
-                            color="default"
+                            color="warning"
                             onClick={() => {
                                 actions.delete(selected.id);
                             }}

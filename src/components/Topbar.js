@@ -28,7 +28,7 @@ export const Topbar = () => {
         <Box px={1} py={1} mt={3} mb={1} bgcolor={"rgba(0, 0, 0, 0.1)"}>
             <Grid container alignItems="center">
                 <Grid item xs>
-                    <FormControlLabel control={<Switch onChange={handleCheck} checked={check}/>} label={check? "Horizontal" : "Vertical" }/>
+                    <FormControlLabel className="custom-topbar" control={<Switch onChange={handleCheck} checked={check}/>} label={check? "Horizontal" : "Vertical" }/>
                 </Grid>
                 {/*<Grid item>
                     <MaterialButton size="small" variant="outlined" color="secondary">Save</MaterialButton>

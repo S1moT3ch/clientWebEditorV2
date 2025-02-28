@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Typography, Paper, Grid} from '@mui/material';
 import "../App.css"
-import { Box } from '@mui/system';
+import {borderRadius, Box, margin} from '@mui/system';
 
 import { Toolbox } from '../components/Toolbox';
 import { Settings } from '../components/Settings';
@@ -33,11 +33,11 @@ export default function App() {
 
 
         return (
-            <div>
+            <div >
                 <Editor  resolver={{Card, Button, Text, Container, CardTop, CardBottom, Paper}}>
                     <Grid container spacing={3} margin={0.5} style={{ display: "flex", flexWrap: "nowrap"}} >
                         <Grid item xs style={{maxWidth:"100%", overflow:"hidden"}}>
-                            <Typography variant="h5" align="center" mt="10px">A super simple page editor</Typography>
+                            <h2 className="custom-typography" align="center" mt="10px">A super simple page editor</h2>
                             <Topbar />
                                 <Frame>
                                     <Element is={Container}  padding={16} background="#eee" canvas >
@@ -48,7 +48,7 @@ export default function App() {
                                     </Element>
                                 </Frame>
                             </Grid>
-                        <Grid item xs={2} mr={3} mt="65px">
+                        <Grid item xs={2} mr={5} mt="115px">
                             <Paper>
                                 <Toolbox />
                                 <Settings />
