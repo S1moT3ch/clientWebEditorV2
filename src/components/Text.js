@@ -4,6 +4,7 @@ import {useNode} from "@craftjs/core";
 import ContentEditable from "react-contenteditable";
 import {textAlign} from "@mui/system";
 import {FormControl, FormLabel, Slider} from "@mui/material";
+import {HexColorPicker} from "react-colorful";
 
 export const Text = ({text, fontSize, color}) => {
     //al connectors passiamo le funzioni :
@@ -30,7 +31,7 @@ export const Text = ({text, fontSize, color}) => {
     //triggero l'effetto ogni volta che cambia hasSelectedNode
 
     useEffect(() => {
-        !hasSelectedNode && setEditable(false);
+        !hasSelectedNode && setEditable(!editable);
     }, [hasSelectedNode]);
 
 
@@ -69,7 +70,7 @@ export const Text = ({text, fontSize, color}) => {
         return (
             <>
                 <FormControl size="small" component="fieldset">
-                    <FormLabel component="legend">Font size</FormLabel>
+                    <FormLabel component="legend" className="custom-label">Font Size</FormLabel>
                     <Slider
                         value={fontSize || 7}
                         step={7}
@@ -79,6 +80,12 @@ export const Text = ({text, fontSize, color}) => {
                             setProp(props => props.fontSize = value);
                         }}
                     />
+                </FormControl>
+                <FormControl fullWidth={true} margin="normal" component="fieldset">
+                    <FormLabel component="legend" className="custom-label">Font Color</FormLabel>
+                    <HexColorPicker defaultValue={"#000"} onChange={color => {
+                        setProp(props => props.color = color)
+                    }} />
                 </FormControl>
             </>
         )

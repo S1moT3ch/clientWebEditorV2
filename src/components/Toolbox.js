@@ -29,10 +29,10 @@ export const Toolbox = () => {
 
 
     return (
-        <Box className="right-panel" >
+        <Box className="right-panel">
             <Grid container direction="column" alignItems="center" rowSpacing={2}>
                 <h2 className="custom-typography" >Drag to add</h2>
-                <Grid container direction="column" item>
+                <Grid container direction="column" item >
                     <MaterialButton className="tool-btn" ref={(ref) => connectors.create(ref, <Button />)} fullWidth variant="contained">
                         Button
                     </MaterialButton>

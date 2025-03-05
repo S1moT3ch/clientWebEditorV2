@@ -49,7 +49,7 @@ const ButtonSettings = () => {
                 </RadioGroup>
             </FormControl>
             <FormControl component="fieldset">
-                <FormLabel component="legend" className="custom-label">Color</FormLabel>
+                <FormLabel component="legend" className="custom-label" >Color</FormLabel>
                 <RadioGroup defaultValue={props.color} onChange={(e) => setProp(props => props.color = e.target.value )}>
                     <FormControlLabel label="Default" value="default" control={<Radio size="small" color="default" />} />
                     <FormControlLabel label="Primary" value="primary" control={<Radio size="small" color="primary" />} />

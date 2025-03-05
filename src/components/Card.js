@@ -4,7 +4,6 @@ import { Button } from "./Button";
 import {Container, ContainerDefaultProps, ContainerSettings} from "./Container";
 import { Element } from "@craftjs/core";
 import { useNode } from "@craftjs/core";
-import {Paper} from "@mui/material";
 import "../App.css"
 
 // questo componente sarà composto dal componente container
@@ -39,9 +38,8 @@ export const CardBottom = ({children}) => {
         <div ref = {el => {
              ref.current = el;
              connect(el)}}
-             className="button-only"
-             >
-             {children ? children : ""}
+             className="button-only">
+             {children ? children : " "}
         </div>
     )
 }
@@ -55,15 +53,17 @@ CardBottom.craft = {
 
 export const Card = ({background, padding = 20}) => {
     return (
-        <Container className="card" background={background} padding={padding} >
-            <Element id="text" is={CardTop} canvas> //Canvas è un container che permette di droppare elementi al suo interno in questo caso solo testo
-                <Text text="Title" fontSize={20} />
-                <Text text="Subtitle" fontSize={15} />
-            </Element>
-            <Element id="button" is={CardBottom} canvas> //Canvas è un container che permette di droppare elementi al suo interno in questo caso solo bottoni
-                <Button size="medium" variant="contained" children="Learn more" />
-            </Element>
-        </Container>
+
+            <Container background={background} padding={padding} >
+                <Element id="text" is={CardTop} canvas> //Canvas è un container che permette di droppare elementi al suo interno in questo caso solo testo
+                    <Text text="Title" fontSize={20} />
+                    <Text text="Subtitle" fontSize={15} />
+                </Element>
+                <Element id="button" is={CardBottom} canvas> //Canvas è un container che permette di droppare elementi al suo interno in questo caso solo bottoni
+                    <Button size="medium" variant="contained" children="Learn more" />
+                </Element>
+            </Container>
+
     )
 }
 

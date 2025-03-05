@@ -38,10 +38,10 @@ export const Settings = () => {
             <Grid container direction="column" spacing={0}>
                 <Grid item>
                     <Box pb={2}>
-                        <Grid container p={1} alignItems="center" flexWrap="wrap" >
-                            <Typography variant="subtitle1">Selected</Typography>
+                        <Grid container alignItems="center" flexWrap="wrap" >
+                            <Typography className="custom-typography" style={{fontSize:"25px", fontWeight:"bold"}}>Selected</Typography>
                             <Box p={1}>
-                                <Chip size="small" color="primary" label={selected.name}  />
+                                <Chip size="medium" color="primary" label={selected.name}  />
                             </Box>
                         </Grid>
                     </Box>
