@@ -51,10 +51,9 @@ CardBottom.craft = {
     }
 }
 
-export const Card = ({background, padding = 20}) => {
+export const Card = ({background, padding = 20, margin = 0}) => {
     return (
-
-            <Container background={background} padding={padding} >
+            <Container background={background} padding={padding} margin={margin} >
                 <Element id="text" is={CardTop} canvas> //Canvas è un container che permette di droppare elementi al suo interno in questo caso solo testo
                     <Text text="Title" fontSize={20} />
                     <Text text="Subtitle" fontSize={15} />

@@ -1,15 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
-
-
-.container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    min-width: 50px;
-}
-
 .craft-node {
     position: relative;
     padding: 10px;
@@ -30,11 +20,20 @@
 
 #ROOT {
     flex-direction: var(--flex-direction);
-    display: flex;
     overflow-x: auto;
     gap: 20px;
 }
 
+.free-canvas {
+    position: relative;
+    min-height: 500px;
+}
+
+.free-canvas > * {
+    position: absolute;
+    top: auto;
+    left: auto;
+}
 
 #ROOT > * {
     flex-shrink: 0;
@@ -45,6 +44,7 @@
     display: flex;
     overflow-x: auto;
     gap: 20px;
+
 }
 
 
@@ -89,6 +89,8 @@
 
 
 .custom-label{
+    font-size: 18px !important;
+    font-weight: bold !important;
     font-family: 'Poppins', sans-serif;
     background: linear-gradient(135deg, #070853, rgba(0, 34, 255, 0.81), #046ba1);
     -webkit-background-clip: text;
@@ -101,6 +103,18 @@
     height: 100%;
     width: 300px;
     top: 0;
+}
+
+.base-btn {
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    min-width: fit-content;
+    min-height: fit-content;
+    white-space: pre-wrap;
+    overflow: hidden;
 }
 
 

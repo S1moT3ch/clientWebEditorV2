@@ -10,33 +10,40 @@ import "../App.css"
 
 // componente container ( che contiene tutti gli altri) è sostanzialmente la tela , permette all utente di modificare colore dello sfondo e padding
 // padding indica lo spazio tra il bordo del container e il contenuto , mentre margin indica lo spazio tra il bordo del container e il suo contenitore 5px (top e bottom) e 0px (left e right)
-export const Container = ({background, padding = 0, margin = 0, children, layout, rows, columns}) => {
-    const {connectors : {connect, drag}, id} = useNode();
+export const Container = ({background, padding = 0, margin = 1, children}) => {
+    const {connectors : {connect, drag}, id,
+           actions: {setProp}, isSelected} = useNode((state) => ({
+            isSelected : state.events.selected
+    }));
+
     const ref = useRef(null);
 
 
+
+
     return (
-            <Paper  className="new-container" id={id} ref = {el =>{
-                ref.current = el;
-                connect(drag(el))}}
-                    style={{margin: `${margin}px`, background, padding: `${padding}px`, minWidth:"150px"}}>
-                {children}
-            </Paper>
+        <Paper  className="new-container" id={id}   ref = {el =>{
+            ref.current = el;
+            connect(drag(el))}}
+                style={{margin: `${margin}px`, background, padding: `${padding}px`, minWidth:"150px", outline: isSelected ? "2px solid blue" : "none"}}>
+            {children}
+        </Paper>
     )
 };
 
 
 
 export const ContainerSettings = () => {
-    const { background, margin, padding, flexDirection, id, actions: {setProp} } = useNode((node) => ({
+    const { background, margin, padding, flexDirection, id, data, actions: {setProp} } = useNode((node) => ({
         background: node.data.props.background,
         padding: node.data.props.padding,
         margin: node.data.props.margin,
         flexDirection: node.data.props.flexDirection,
-        id: node.id
+        id: node.id,
+        data: node.data
     }));
 
-    const [check, setCheck] = useState(flexDirection === "column");
+    const [check, setCheck] = useState(flexDirection === "row");
 
 
     //sembrava impossibile ma sono riuscito ad evitare gli aggiornamenti del layout sui click dei container
@@ -53,7 +60,7 @@ export const ContainerSettings = () => {
         if (selectedContainer.id !== "ROOT") {
             selectedContainer.style.setProperty("--flex-direction", check ? "row" : "column");
         }
-    }, [check]);
+    }, [check,id]);
 
 
 
@@ -74,7 +81,7 @@ export const ContainerSettings = () => {
                 <FormLabel component="legend"  className="custom-label" >Margin</FormLabel>
                 <Slider defaultValue={margin} onChange={(_, value) => setProp(props => props.margin = value)} />
             </FormControl>
-            {id !== "card" || "ROOT" && <FormControlLabel control={<Switch onChange={handleCheck} checked={check}/>} label={check? "Horizontal" : "Vertical" }/>}
+            {id !== "ROOT" && data.type.name !== "Card" && <FormControlLabel control={<Switch onChange={handleCheck} checked={check}/>} label={check? "Horizontal" : "Vertical" }/>}
         </div>
     )
 }

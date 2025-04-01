@@ -16,7 +16,7 @@ export const Text = ({text, fontSize, color}) => {
     //state information related to the corresponding Node
 
     const {
-        connectors: {connect, drag},
+        connectors: {connect, drag}, id,
         hasSelectedNode,
         actions: {setProp}} = useNode((state) => ({
         hasSelectedNode: state.events.selected,
@@ -39,7 +39,7 @@ export const Text = ({text, fontSize, color}) => {
         <div ref={el => {
             ref.current = el;
             connect(drag(el))
-        }} className="text-comp">
+        }} className="text-comp" id={id}>
             <ContentEditable
                 html={text}
                 onChange={(e) => {
@@ -74,7 +74,7 @@ export const Text = ({text, fontSize, color}) => {
                     <Slider
                         value={fontSize || 7}
                         step={7}
-                        min={1}
+                        min={8}
                         max={50}
                         onChange={(_, value) => {
                             setProp(props => props.fontSize = value);

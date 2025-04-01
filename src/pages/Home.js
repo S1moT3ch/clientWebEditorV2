@@ -1,19 +1,19 @@
 import React, {useEffect, useState} from 'react';
-import {Typography, Paper, Grid} from '@mui/material';
+import {Paper, Grid} from '@mui/material';
 import "../App.css"
-import {borderRadius, Box, margin} from '@mui/system';
 
 import { Toolbox } from '../components/Toolbox';
 import { Settings } from '../components/Settings';
 import { Container } from '../components/Container';
 import { Button } from '../components/Button';
 import { Text } from '../components/Text';
+import { ImageUpload } from '../components/ImageUpload';
 import { Card, CardTop, CardBottom} from '../components/Card';
 import { Topbar } from '../components/Topbar';
 import "../App.css"
 
 
-import {Editor, Frame, Element} from "@craftjs/core";
+import {Editor, Frame, Element, useNode} from "@craftjs/core";
 
 //editor avvolge tutta l'applicazione per fornire contesto ai componenti modificabili
 //definiti nella prop resolver
@@ -28,13 +28,35 @@ import {Editor, Frame, Element} from "@craftjs/core";
 
 export default function App() {
 
-
     //la modifica del layout e il relativo useEffect erano nella topbar , ma in questo modo non mi aggiornava i figli del container ROOT come le card
     //che rimanevano di un layout sbagliato
 
     const [layout, setLayout] = useState("column"); // Layout corrente
     const [rows, setRows] = useState(2); // Numero di righe
     const [columns, setColumns] = useState(2); // Numero di colonne
+
+
+    // const handleFreeDrop = (e) => {
+    //     e.preventDefault();
+    //     const container = document.getElementById("ROOT")
+    //     if(container.classList.contains("free-container")){
+    //         const containerRect = container.getBoundingClientRect();
+    //
+    //         container.addEventListener("drag", (e) => {
+    //             const x = e.clientX - containerRect.left;
+    //             const y = e.clientY - containerRect.top;
+    //
+    //         const currentNode = e.target;
+    //         currentNode.style.setProperty("left", `${40}px`);
+    //         currentNode.style.setProperty("top", `${49}px`);
+    //         })
+    //     }
+    // }
+    // onDrop={handleFreeDrop} onDragEnd={(e) => e.preventDefault()} (add to div)
+
+
+
+
 
     // Modifica il layout del ROOT quando layout, rows o columns cambiano
     useEffect(() => {
@@ -45,15 +67,26 @@ export default function App() {
                     container.style.setProperty("display", "grid");
                     container.style.setProperty("grid-template-rows", `repeat(${rows}, 1fr)`);
                     container.style.setProperty("grid-template-columns", `repeat(${columns}, 1fr)`);
+                {if (container.classList.contains("free-canvas")) {
+                    container.classList.remove("free-canvas");
+                }}
                     break;
                 case "column":
                     container.style.setProperty("display", "flex");
                     container.style.setProperty("flex-direction", "column");
+                {if (container.classList.contains("free-canvas")) {
+                    container.classList.remove("free-canvas");
+                }}
                     break;
                 case "row":
-                default:
                     container.style.setProperty("display", "flex");
                     container.style.setProperty("flex-direction", "row");
+                {if (container.classList.contains("free-canvas")) {
+                    container.classList.remove("free-canvas");
+                }}
+                    break;
+                default:
+                    container.classList.add("free-canvas");
                     break;
             }
         }
@@ -62,7 +95,7 @@ export default function App() {
 
     return (
             <div style={{display:"flex"}}>
-                <Editor resolver={{Card, Button, Text, Container, CardTop, CardBottom}}>
+                <Editor resolver={{Card, Button, Text, Container, CardTop, CardBottom, ImageUpload}}>
                     <Grid container spacing={3} margin={0.5} style={{ display: "flex", flexWrap: "nowrap"}} >
                         <Grid item xs style={{ overflow:"hidden", flexGrow:1, maxWidth: "calc(100vw - 300px)"}}>
                             <h2 className="custom-typography" align="center" >Page Editor</h2>
@@ -72,14 +105,16 @@ export default function App() {
                                      setRows={setRows}
                                      columns={columns}
                                      setColumns={setColumns} />
-                                <Frame>
-                                    <Element is={Container}  padding={16} background="#eee" canvas >
-                                        <Card/>
-                                        <Button size="medium" variant="contained">Ciao</Button>
-                                        <Text size="small" text="Hi world!" />
-                                        <Text size="small"  text="It's me again!" />
-                                    </Element>
-                                </Frame>
+                                <div>
+                                    <Frame>
+                                        <Element is={Container} padding={16} background="#eee" canvas>
+                                            <Card/>
+                                            <Button size="medium" variant="contained">Ciao</Button>
+                                            <Text size="small" text="Hi world!" />
+                                            <Text size="small"  text="It's me again!" />
+                                        </Element>
+                                    </Frame>
+                                </div>
                         </Grid>
                         <Grid item xs={2} mr={5} >
                             <Paper className="custom-paper">

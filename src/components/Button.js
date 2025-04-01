@@ -1,77 +1,103 @@
-import React, {useRef, useState} from "react";
-import {Button as MaterialButton, FormControl, FormControlLabel, FormLabel, RadioGroup, Radio, TextField } from "@mui/material";
-import {useNode} from "@craftjs/core";
-import { Resizable } from "react-resizable";
-import {flexbox, lineHeight, spacing} from "@mui/system";
-//variant di material-ui può essere : "text", "outlined", "contained"
-//ho sostituito childreno con text che sono la stessa cosa
+import React, { useRef } from "react";
+import { FormControl, FormLabel, TextField, Slider } from "@mui/material";
+import { useNode } from "@craftjs/core";
+import {HexColorPicker} from "react-colorful";
+import "../App.css";
 
-export const Button = ({size, color, variant, children}) => {
-    const {connectors : {connect, drag}} = useNode();
+export const Button = ({ color = "#0000FF", colorText = "#ffffff",  width = 100, height = 50, children }) => {
+    const {
+        connectors: { connect, drag }, id,
+        actions: { setProp }, props
+    } = useNode((state) => ({
+        isSelected: state.events.selected,
+    }));
+
     const ref = useRef(null);
 
+
+
+
     return (
+        <button className="base-btn" id={id}
+            ref={(el) => {ref.current = el;
+                connect(drag(el));}}
+            style={{
+                backgroundColor: color,
+                color: colorText,
+                fontSize: "16px",
+                width: `${width}px`,
+                height: `${height}px`,
+            }}
+                contentEditable
+                suppressContentEditableWarning
+                onInput={(e) => setProp((e) => (props.children = e.target.children))}
+        >
+            {children}
+        </button>
+    );
+};
 
-          <MaterialButton ref = {el =>{
-              ref.current = el;
-              connect(drag(el))}} size={size} color={color} variant={variant}  >
-              {children}
-          </MaterialButton>
-    )
-}
 
-//come per text andiamo a definire il componen  te associato al nodo button che rappresenta il pannello di setting personalizzato per il button
 const ButtonSettings = () => {
-    const{actions: {setProp}, props} = useNode((node) => ({
+    const { actions: { setProp }, props } = useNode((node) => ({
         props: node.data.props
     }));
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", gap: "25px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
             <FormControl size="small" component="fieldset">
-                <FormLabel component="legend" className="custom-label">Text</FormLabel>
-                <TextField defaultValue={props.children} onChange={(e) => setProp(props => props.children = e.target.value )}/>
+                <FormLabel className="custom-label">Text</FormLabel>
+                <TextField
+                    defaultValue={props.children}
+                    onChange={(e) => setProp((props) => (props.children = e.target.value))}
+                    multiline
+                    maxRows={2}
+                />
             </FormControl>
             <FormControl size="small" component="fieldset">
-                <FormLabel component="legend" className="custom-label">Size</FormLabel>
-                <RadioGroup defaultValue={props.size} onChange={(e) => setProp(props => props.size = e.target.value )}>
-                    <FormControlLabel label="Small" value="small" control={<Radio size="small" color="primary" />} />
-                    <FormControlLabel label="Medium" value="medium" control={<Radio size="small" color="primary" />} />
-                    <FormControlLabel label="Large" value="large" control={<Radio size="small" color="primary" />} />
-                </RadioGroup>
+                <FormLabel className="custom-label">Width</FormLabel>
+                <Slider
+                    defaultValue={props.width}
+                    min={100}
+                    max={1000}
+                    onChange={(_, value) => setProp((props) => (props.width = value))}
+                />
+            </FormControl>
+            <FormControl size="small" component="fieldset">
+                <FormLabel className="custom-label">Height</FormLabel>
+                <Slider
+                    defaultValue={props.width}
+                    min={50}
+                    max={1000}
+                    onChange={(_, value) => setProp((props) => (props.height = value))}
+                />
             </FormControl>
             <FormControl component="fieldset">
-                <FormLabel component="legend" className="custom-label">Variant</FormLabel>
-                <RadioGroup defaultValue={props.variant} onChange={(e) => setProp(props => props.variant = e.target.value )}>
-                    <FormControlLabel label="Text" value="text" control={<Radio size="small" color="primary" />} />
-                    <FormControlLabel label="Outlined" value="outlined" control={<Radio size="small" color="primary" />} />
-                    <FormControlLabel label="Contained" value="contained" control={<Radio size="small" color="primary" />} />
-                </RadioGroup>
+                <FormLabel className="custom-label">Color</FormLabel>
+                <HexColorPicker color={props.color || '#000'} onChange={color => {
+                    setProp(props => props.color = color)
+                }} />
             </FormControl>
             <FormControl component="fieldset">
-                <FormLabel component="legend" className="custom-label" >Color</FormLabel>
-                <RadioGroup defaultValue={props.color} onChange={(e) => setProp(props => props.color = e.target.value )}>
-                    <FormControlLabel label="Default" value="default" control={<Radio size="small" color="default" />} />
-                    <FormControlLabel label="Primary" value="primary" control={<Radio size="small" color="primary" />} />
-                    <FormControlLabel label="Secondary" value="secondary" control={<Radio size="small" color="primary" />} />
-                </RadioGroup>
+                <FormLabel className="custom-label">Font Color</FormLabel>
+                <HexColorPicker color={props.colorText || '#000'} onChange={color => {
+                    setProp(props => props.colorText = color)
+                }} />
             </FormControl>
         </div>
-    )
+    );
 };
 
-
 Button.craft = {
-    //dafault values del bottone
-        props: {
-            size: "small",
-            variant: "contained",
-            color: "primary",
-            children: "Click me"
-        },
+    props: {
+        color: "#1010f1",
+        colorText: "#ffffff",
+        fontSize: 16,
+        width: 100,
+        height: 50,
+        children: "Click me"
+    },
     related: {
         settings: ButtonSettings
     }
-}
-
-
+};
