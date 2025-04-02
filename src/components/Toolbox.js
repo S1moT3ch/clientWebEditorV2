@@ -1,4 +1,4 @@
-import React, {useRef} from "react";
+import React from "react";
 import { Box, Grid, Button as MaterialButton } from "@mui/material";
 import {Element} from "@craftjs/core"
 import { useEditor } from "@craftjs/core";
@@ -10,7 +10,7 @@ import { Card } from "./Card";
 import "../App.css";
 
 export const Toolbox = () => {
-    const { connectors, actions, query } = useEditor();
+    const { connectors } = useEditor();
 
 
 

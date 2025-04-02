@@ -31,9 +31,8 @@
 
 .free-canvas > * {
     position: absolute;
-    top: auto;
-    left: auto;
 }
+
 
 #ROOT > * {
     flex-shrink: 0;
@@ -55,7 +54,7 @@
     flex-direction: column;
     padding: 20px;
     background-color: rgba(200, 188, 188, 0.3);
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .tool-btn {
@@ -85,6 +84,7 @@
 
 .text-comp {
     font-family: "Quicksand", sans-serif;
+    width: fit-content;
 }
 
 

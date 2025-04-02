@@ -13,7 +13,7 @@ import { Topbar } from '../components/Topbar';
 import "../App.css"
 
 
-import {Editor, Frame, Element, useNode} from "@craftjs/core";
+import {Editor, Frame, Element} from "@craftjs/core";
 
 //editor avvolge tutta l'applicazione per fornire contesto ai componenti modificabili
 //definiti nella prop resolver
@@ -35,25 +35,59 @@ export default function App() {
     const [rows, setRows] = useState(2); // Numero di righe
     const [columns, setColumns] = useState(2); // Numero di colonne
 
+    const updateNodePosition = (id, gridRow, gridColumn, isGrid) => {
+        const node = document.getElementById(id);
+        if (!node) return;
 
-    // const handleFreeDrop = (e) => {
-    //     e.preventDefault();
-    //     const container = document.getElementById("ROOT")
-    //     if(container.classList.contains("free-container")){
-    //         const containerRect = container.getBoundingClientRect();
-    //
-    //         container.addEventListener("drag", (e) => {
-    //             const x = e.clientX - containerRect.left;
-    //             const y = e.clientY - containerRect.top;
-    //
-    //         const currentNode = e.target;
-    //         currentNode.style.setProperty("left", `${40}px`);
-    //         currentNode.style.setProperty("top", `${49}px`);
-    //         })
-    //     }
-    // }
-    // onDrop={handleFreeDrop} onDragEnd={(e) => e.preventDefault()} (add to div)
+        if (isGrid) {
+            node.style.gridRowStart = gridRow;
+            node.style.gridColumnStart = gridColumn;
+        } else {
+            node.style.top = `${gridRow}px`;
+            node.style.left = `${gridColumn}px`;
+        }
+    };
 
+    function getDraggedElementId(e) {
+        const currentEl = e.target.id;
+        e.dataTransfer.setData("text/plain", currentEl);
+    }
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        const container = document.getElementById("ROOT");
+        if (!container) return;
+
+        const nodeId = e.dataTransfer.getData("text/plain");
+        if (!nodeId) return;
+
+        const isGrid = getComputedStyle(container).display === "grid";
+
+        if (isGrid) {
+            // Ottieni le dimensioni del container
+            const rect = container.getBoundingClientRect();
+            const offsetX = e.clientX - rect.left;
+            const offsetY = e.clientY - rect.top;
+
+            // Ottieni il numero di colonne e righe della griglia
+            const gridStyles = getComputedStyle(container);
+            const columnWidth = rect.width / parseInt(gridStyles.gridTemplateColumns.split(" ").length);
+            const rowHeight = rect.height / parseInt(gridStyles.gridTemplateRows.split(" ").length);
+
+            // Calcola la riga e la colonna basate sulla posizione del mouse
+            const gridColumn = Math.floor(offsetX / columnWidth) + 1;
+            const gridRow = Math.floor(offsetY / rowHeight) + 1;
+
+            updateNodePosition(nodeId, gridRow, gridColumn, true);
+        } else {
+            // Se è free canvas, usa le coordinate top e left
+            const rect = container.getBoundingClientRect();
+            const left = e.clientX - rect.left;
+            const top = e.clientY - rect.top;
+
+            updateNodePosition(nodeId, top, left, false);
+        }
+    };
 
 
 
@@ -86,6 +120,7 @@ export default function App() {
                 }}
                     break;
                 default:
+                    container.style.removeProperty("display");
                     container.classList.add("free-canvas");
                     break;
             }
@@ -105,16 +140,17 @@ export default function App() {
                                      setRows={setRows}
                                      columns={columns}
                                      setColumns={setColumns} />
-                                <div>
-                                    <Frame>
-                                        <Element is={Container} padding={16} background="#eee" canvas>
-                                            <Card/>
-                                            <Button size="medium" variant="contained">Ciao</Button>
-                                            <Text size="small" text="Hi world!" />
-                                            <Text size="small"  text="It's me again!" />
-                                        </Element>
-                                    </Frame>
-                                </div>
+                            <div onDragStart={getDraggedElementId} onDrop={handleDrop} onDragEnd={(e) => e.preventDefault()}>
+                                <Frame>
+                                    <Element is={Container} padding={16} background="#eee" canvas>
+                                        <Card/>
+                                        <Button size="medium" variant="contained">Ciao</Button>
+                                        <Text size="small" text="Hi world!" />
+                                        <Text size="small"  text="It's me again!" />
+                                    </Element>
+                                </Frame>
+                            </div>
+
                         </Grid>
                         <Grid item xs={2} mr={5} >
                             <Paper className="custom-paper">

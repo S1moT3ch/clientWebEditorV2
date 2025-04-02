@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import {Box, Button, Menu, MenuItem, TextField, Dialog, DialogTitle, DialogContent, DialogContentText, Snackbar, DialogActions} from "@mui/material";
-import lz from "lzutf8";
+import React, { useState } from "react";
+import {Box, Button, Menu, MenuItem, TextField, Dialog, DialogTitle, DialogContent, Snackbar, DialogActions} from "@mui/material";
 import copy from "copy-to-clipboard";
 
 import "../App.css";
@@ -8,11 +7,10 @@ import {useEditor} from "@craftjs/core";
 
 export const Topbar = ({ layout, setLayout, rows, setRows, columns, setColumns }) => {
     const { query, actions } = useEditor();
-    const [dropdown, setDropdown] = useState(null); // Stato per gestire l'apertura del menu
-    const [snackbarMessage, setSnackbarMessage] = useState(); //Stato per notificare salvataggio stato
-    const [dialogOpen, setDialogOpen] = useState(false); //Stato per gestire apertura dialog
-    const [stateToLoad, setStateToLoad] = useState(""); //Stato per gestire caricamento stato
-
+    const [dropdown, setDropdown] = useState(null);
+    const [snackbarMessage, setSnackbarMessage] = useState();
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [stateToLoad, setStateToLoad] = useState("");
 
     const handleMenuClick = (event) => {
         setDropdown(event.currentTarget);
@@ -23,10 +21,9 @@ export const Topbar = ({ layout, setLayout, rows, setRows, columns, setColumns }
     };
 
     const handleLayoutChange = (newLayout) => {
-        setLayout(newLayout);  // Cambia il layout
-        setDropdown(null); // Chiude il menu
+        setLayout(newLayout);
+        setDropdown(null);
     };
-
 
     return (
         <Box px={1} py={1} mt={3} mb={1} bgcolor={"rgba(0, 0, 0, 0.1)"} style={{display:"flex", flexDirection:"row", borderRadius:"20px"}}>
@@ -39,7 +36,6 @@ export const Topbar = ({ layout, setLayout, rows, setRows, columns, setColumns }
                 {layout === "row" ? "Horizontal" : layout === "column" ? "Vertical" : layout === "grid" ? "Grid Display" : "Free Canvas"}
             </Button>
 
-            {/* Input per righe e colonne quando il layout è grid */}
             {layout === "grid" && (
                 <Box style={{ display: "flex", alignItems: "center", marginLeft: "3px"}}>
                     <TextField
@@ -49,7 +45,6 @@ export const Topbar = ({ layout, setLayout, rows, setRows, columns, setColumns }
                         onChange={(e) => setRows(Number(e.target.value))}
                         variant="outlined"
                         size="small"
-                            sx={{ fontWeight: "bold", fontSize: "17px" }}
                     />
                     <TextField
                         label="Columns"
@@ -74,13 +69,23 @@ export const Topbar = ({ layout, setLayout, rows, setRows, columns, setColumns }
             <Button className="custom-typography"
                     style={{ fontWeight: "bold", fontSize: "17px", marginLeft: "auto", borderRadius:"20px"}}
                     variant="outlined"
-                    onClick={()=> {
-                        const json = query.serialize();
-                        copy(lz.encodeBase64(lz.compress(json)));
-                        setSnackbarMessage("State saved to clipboard!");
+                    onClick={() => {
+                        const rootElement = document.getElementById("ROOT");
+                        if (!rootElement) {
+                            setSnackbarMessage("Error: ROOT container not found!");
+                            return;
+                        }
+                        const clonedElement = rootElement.cloneNode(true);
+                        clonedElement.querySelectorAll("[data-craft-node]").forEach(node => {
+                            node.removeAttribute("data-craft-node");
+                        });
+                        const extractedHTML = clonedElement.outerHTML;
+                        copy(extractedHTML);
+                        setSnackbarMessage("HTML copied to clipboard!");
                     }}>
                 Save
             </Button>
+
             <Button className="custom-typography"
                     style={{ fontWeight: "bold", fontSize: "17px", borderRadius:"20px", marginLeft:"10px"}}
                     variant="outlined"
@@ -90,37 +95,41 @@ export const Topbar = ({ layout, setLayout, rows, setRows, columns, setColumns }
                 Load
             </Button>
             <Dialog
-            open={dialogOpen}
-            onClose={() => setDialogOpen(false)}
-            fullWidth
-            maxWidth="md"
+                open={dialogOpen}
+                onClose={() => setDialogOpen(false)}
+                fullWidth
+                maxWidth="md"
             >
                 <DialogTitle id="dialog-title">Load State</DialogTitle>
                 <DialogContent>
                     <TextField
-                    multiline
-                    fullWidth
-                    placeholder="Paste the state you want to load !"
-                    size="small"
-                    value={stateToLoad}
-                    onChange={ e => setStateToLoad(e.target.value)}
+                        multiline
+                        fullWidth
+                        placeholder="Paste the HTML you want to load!"
+                        size="small"
+                        value={stateToLoad}
+                        onChange={ e => setStateToLoad(e.target.value)}
                     />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
                     <Button
-                    onClick={() => {
-                        setDialogOpen(false);
-                        try{
-                            const json = lz.decompress(lz.decodeBase64(stateToLoad));
-                            actions.deserialize(json);
-                            setSnackbarMessage("State loaded!")
-                    }catch (error) {
-                        setSnackbarMessage("The state you're trying to load is not valid!");
-                        setDialogOpen(true);
-                        }
-                    }}
-                    autoFocus
+                        onClick={() => {
+                            setDialogOpen(false);
+                            try{
+                                const rootElement = document.getElementById("ROOT");
+                                if (!rootElement) {
+                                    setSnackbarMessage("Error: ROOT container not found!");
+                                    return;
+                                }
+                                rootElement.innerHTML = stateToLoad;
+                                setSnackbarMessage("HTML loaded successfully!");
+                            } catch (error) {
+                                setSnackbarMessage("The HTML you're trying to load is not valid!");
+                                setDialogOpen(true);
+                            }
+                        }}
+                        autoFocus
                     >
                         Load
                     </Button>

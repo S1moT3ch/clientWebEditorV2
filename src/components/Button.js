@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { FormControl, FormLabel, TextField, Slider } from "@mui/material";
-import { useNode } from "@craftjs/core";
+import {useNode} from "@craftjs/core";
 import {HexColorPicker} from "react-colorful";
 import "../App.css";
 
@@ -11,6 +11,8 @@ export const Button = ({ color = "#0000FF", colorText = "#ffffff",  width = 100,
     } = useNode((state) => ({
         isSelected: state.events.selected,
     }));
+
+
 
     const ref = useRef(null);
 
@@ -28,8 +30,6 @@ export const Button = ({ color = "#0000FF", colorText = "#ffffff",  width = 100,
                 width: `${width}px`,
                 height: `${height}px`,
             }}
-                contentEditable
-                suppressContentEditableWarning
                 onInput={(e) => setProp((e) => (props.children = e.target.children))}
         >
             {children}

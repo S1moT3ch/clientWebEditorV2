@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-import {Box, Chip, Grid, Typography, Button as MaterialButton, FormControl, Slider, FormLabel} from "@mui/material";
+import React from "react";
+import {Box, Chip, Grid, Typography, Button as MaterialButton} from "@mui/material";
 import {useEditor} from "@craftjs/core";
 import "../App.css"
 

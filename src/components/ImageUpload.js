@@ -6,16 +6,16 @@ import { Resizable } from "re-resizable";
 // Placeholder + image upload
 export const ImageUpload = ({ src, width = 200, height = 200 }) => {
     const {
-        connectors: { connect, drag },
+        connectors: { connect, drag }, id,
         actions: { setProp },
-        selected, // Aggiunto per determinare se l'immagine è selezionata
+        selected,
     } = useNode();
 
     const [imageSrc, setImageSrc] = useState(src || ""); // Inizializza con l'immagine passata
     const [dimensions, setDimensions] = useState({ width, height });
-    const [imageLoaded, setImageLoaded] = useState(false); // Stato per sapere se l'immagine è caricata
+    const [imageLoaded, setImageLoaded] = useState(false); // Stato per il caricamento dell'immagine
     const imgRef = useRef(null); // Riferimento per l'immagine
-    const [dragging, setDragging] = useState(false); // Stato per determinare se si sta trascinando
+    const [dragging, setDragging] = useState(false); // Stato per determinare se si sta draggando
 
     // Funzione per gestire il caricamento dell'immagine tramite file input
     const handleImageUpload = (event) => {
@@ -23,14 +23,14 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
         if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                setImageSrc(e.target.result); // Imposta l'immagine selezionata
-                setProp((props) => (props.src = e.target.result)); // Salva l'immagine nell'editor
+                setImageSrc(e.target.result); // Imposto l'immagine selezionata
+                setProp((props) => (props.src = e.target.result)); // Salvo l'immagine nell'editor
             };
             reader.readAsDataURL(file);
         }
     };
 
-    // Effetto per monitorare il caricamento dell'immagine
+    // Effetto per il caricamento dell'immagine
     useEffect(() => {
         if (imgRef.current) {
             imgRef.current.onload = () => {
@@ -38,7 +38,6 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
                 const imgWidth = imgRef.current.naturalWidth;
                 const imgHeight = imgRef.current.naturalHeight;
 
-                // Calcoliamo una dimensione ragionevole per l'immagine mantenendo le proporzioni
                 const maxDimension = 500;
                 const ratio = Math.min(maxDimension / imgWidth, maxDimension / imgHeight);
 
@@ -61,7 +60,7 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
             minWidth={50}
             minHeight={50}
             enable={{
-                bottomRight: true, // Permetti il ridimensionamento solo dall'angolo in basso a destra
+                bottomRight: true,
             }}
             onResizeStop={(e, direction, ref, d) => {
                 // Calcoliamo la nuova dimensione basata sul lato
@@ -97,6 +96,7 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
                 }
             }}
             style={{
+                zIndex: 1,
                 position: "relative",
                 cursor: dragging ? "move" : "default", // Cambia il cursore quando si trascina
                 boxShadow: dragging ? "0 0 0 2px rgba(0, 0, 0, 0.2)" : "none", // Aggiungi una guida visiva durante il drag
@@ -118,6 +118,7 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
             >
                 {imageSrc ? (
                     <img
+                        id={id}
                         ref={imgRef}
                         src={imageSrc}
                         alt="Uploaded"
@@ -125,6 +126,7 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
                             width: "100%",
                             height: "100%",
                             objectFit: "contain", // Mantieni l'immagine intera senza ritagliarla
+                            zIndex:0,
                         }}
                     />
                 ) : (
@@ -159,8 +161,7 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
                             width: "15px",
                             height: "15px",
                             background: "blue",
-                            cursor: "nwse-resize", // Mostra un cursore di ridimensionamento diagonale
-                            zIndex: 10, // Aggiungi un livello di z-index per farlo stare sopra
+                            cursor: "nwse-resize",
                         }}
                     />
                 )}
