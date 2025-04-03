@@ -151,7 +151,11 @@ export const Topbar = ({ layout, setLayout, rows, setRows, columns, setColumns, 
                                     setSnackbarMessage("Error: ROOT container not found!");
                                     return;
                                 }
-                                rootElement.innerHTML = stateToLoad;
+                                rootElement.innerHTML = stateToLoad; // Imposta il contenuto HTML
+                                const newRoot = document.createElement('div');
+                                newRoot.innerHTML = stateToLoad;
+                                rootElement.parentNode.replaceChild(newRoot, rootElement);
+
                                 setSnackbarMessage("HTML loaded successfully!");
                             } catch (error) {
                                 setSnackbarMessage("The HTML you're trying to load is not valid!");

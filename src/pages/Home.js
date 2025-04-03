@@ -34,7 +34,7 @@ export default function App() {
     const [rows, setRows] = useState(2); // Numero di righe
     const [columns, setColumns] = useState(2); // Numero di colonne
     const [width, setWidth] = useState(1148); // Larghezza del container
-    const [height, setHeight] = useState(600); // Altezza del container
+    const [height, setHeight] = useState("fit-content"); // Altezza del container
 
     const updateNodePosition = (id, gridRow, gridColumn, isGrid) => {
         const node = document.getElementById(id);

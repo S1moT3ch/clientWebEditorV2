@@ -25,7 +25,7 @@ export const Container = ({background, padding = 0, margin = 1, children}) => {
         <Paper  className="new-container" id={id}   ref = {el =>{
             ref.current = el;
             connect(drag(el))}}
-                style={{margin: `${margin}px`, background, padding: `${padding}px`, outline: isSelected ? "2px solid blue" : "none"}}>
+                style={{margin: `${margin}px`, background, padding: `${padding}px`,height:"fit-content", outline: isSelected ? "2px solid blue" : "none"}}>
             {children}
         </Paper>
     )
