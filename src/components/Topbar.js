@@ -5,12 +5,13 @@ import copy from "copy-to-clipboard";
 import "../App.css";
 import {useEditor} from "@craftjs/core";
 
-export const Topbar = ({ layout, setLayout, rows, setRows, columns, setColumns }) => {
+export const Topbar = ({ layout, setLayout, rows, setRows, columns, setColumns, width, setWidth, height, setHeight }) => {
     const { query, actions } = useEditor();
     const [dropdown, setDropdown] = useState(null);
     const [snackbarMessage, setSnackbarMessage] = useState();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [stateToLoad, setStateToLoad] = useState("");
+
 
     const handleMenuClick = (event) => {
         setDropdown(event.currentTarget);
@@ -56,6 +57,34 @@ export const Topbar = ({ layout, setLayout, rows, setRows, columns, setColumns }
                     />
                 </Box>
             )}
+
+            {layout === "free" && (
+                <Box style={{ display: "flex", alignItems: "center", marginLeft: "3px" }}>
+                    <TextField
+                        label="Width (px)"
+                        type="number"
+                        value={width}
+                        onChange={(e) => {
+                            setWidth(Number(e.target.value));
+                            document.getElementById("ROOT").style.width = `${e.target.value}px`;
+                        }}
+                        variant="outlined"
+                        size="small"
+                    />
+                    <TextField
+                        label="Height (px)"
+                        type="number"
+                        value={height}
+                        onChange={(e) => {
+                            setHeight(Number(e.target.value));
+                            document.getElementById("ROOT").style.height = `${e.target.value}px`;
+                        }}
+                        variant="outlined"
+                        size="small"
+                    />
+                </Box>
+            )}
+
             <Menu
                 anchorEl={dropdown}
                 open={Boolean(dropdown)}

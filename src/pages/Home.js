@@ -30,10 +30,11 @@ export default function App() {
 
     //la modifica del layout e il relativo useEffect erano nella topbar , ma in questo modo non mi aggiornava i figli del container ROOT come le card
     //che rimanevano di un layout sbagliato
-
     const [layout, setLayout] = useState("column"); // Layout corrente
     const [rows, setRows] = useState(2); // Numero di righe
     const [columns, setColumns] = useState(2); // Numero di colonne
+    const [width, setWidth] = useState(1148); // Larghezza del container
+    const [height, setHeight] = useState(600); // Altezza del container
 
     const updateNodePosition = (id, gridRow, gridColumn, isGrid) => {
         const node = document.getElementById(id);
@@ -95,6 +96,8 @@ export default function App() {
     // Modifica il layout del ROOT quando layout, rows o columns cambiano
     useEffect(() => {
         const container = document.getElementById("ROOT");
+        container.style.width = `${width}px`;
+        container.style.height = `${height}px`;
         if (container) {
             switch (layout) {
                 case "grid":
@@ -121,6 +124,9 @@ export default function App() {
                     break;
                 default:
                     container.style.removeProperty("display");
+                    container.childNodes.forEach((el) => {
+                        el.style.setProperty("position", "absolute");
+                    });
                     container.classList.add("free-canvas");
                     break;
             }
@@ -139,7 +145,12 @@ export default function App() {
                                      rows={rows}
                                      setRows={setRows}
                                      columns={columns}
-                                     setColumns={setColumns} />
+                                     setColumns={setColumns}
+                                     width={width}
+                                     setWidth={setWidth}
+                                     height={height}
+                                     setHeight={setHeight}
+                            />
                             <div onDragStart={getDraggedElementId} onDrop={handleDrop} onDragEnd={(e) => e.preventDefault()}>
                                 <Frame>
                                     <Element is={Container} padding={16} background="#eee" canvas>

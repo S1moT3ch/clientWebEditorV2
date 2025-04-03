@@ -54,8 +54,14 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
         }
     }, [imageSrc]);
 
+    const isFreeCanvas = document.getElementById("ROOT").classList.contains("free-canvas");
+    const isGridCanvas = document.getElementById("ROOT").style.display === "grid";
+
+
+
     return (
         <Resizable
+            id={id}
             size={{ width: dimensions.width, height: dimensions.height }}
             minWidth={50}
             minHeight={50}
@@ -96,7 +102,7 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
                 }
             }}
             style={{
-                zIndex: 1,
+                zIndex: 0,
                 position: "relative",
                 cursor: dragging ? "move" : "default", // Cambia il cursore quando si trascina
                 boxShadow: dragging ? "0 0 0 2px rgba(0, 0, 0, 0.2)" : "none", // Aggiungi una guida visiva durante il drag
@@ -106,10 +112,11 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
         >
             <Box
                 ref={(el) => connect(drag(el))}
+                id={(isFreeCanvas || isGridCanvas) ? id : null} // Aggiungi l'id solo se il container è free canvas
                 style={{
                     width: dimensions.width,
                     height: dimensions.height,
-                    position: "relative",
+                    position: isFreeCanvas ? "absolute" : "relative", // Cambia posizione in base al layout
                     textAlign: "center",
                     display: "flex",
                     justifyContent: "center",
@@ -118,7 +125,7 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
             >
                 {imageSrc ? (
                     <img
-                        id={id}
+                        id={(isFreeCanvas || isGridCanvas) ? id : null}
                         ref={imgRef}
                         src={imageSrc}
                         alt="Uploaded"
