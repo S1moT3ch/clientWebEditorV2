@@ -29,7 +29,7 @@ export const Toolbox = () => {
                     </MaterialButton>
                 </Grid>
                 <Grid container direction="column" item>
-                    <MaterialButton  className="tool-btn" ref={(ref) => connectors.create(ref, <Element is={Container} padding={30} background="#eee" canvas />)} variant="contained">
+                    <MaterialButton  className="tool-btn" ref={(ref) => connectors.create(ref, <Element is={Container} padding={30}  canvas />)} variant="contained">
                         Container
                     </MaterialButton>
                 </Grid>

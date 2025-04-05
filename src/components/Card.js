@@ -51,9 +51,9 @@ CardBottom.craft = {
     }
 }
 
-export const Card = ({background, padding = 20, margin = 0}) => {
+export const Card = ({backgroundColor, padding = 20, margin = 0}) => {
     return (
-            <Container background={background} padding={padding} margin={margin} >
+            <Container backgroundColor={backgroundColor} padding={padding} margin={margin} style={{flexDirection:"column"}} >
                 <Element id="text" is={CardTop} canvas> //Canvas è un container che permette di droppare elementi al suo interno in questo caso solo testo
                     <Text text="Title" fontSize={20} />
                     <Text text="Subtitle" fontSize={15} />
@@ -68,7 +68,6 @@ export const Card = ({background, padding = 20, margin = 0}) => {
 
 Card.craft = {
     related: {
-        // Since Card has the same settings as Container, we'll just reuse ContainerSettings
         settings: ContainerSettings,
         props: ContainerDefaultProps
     }

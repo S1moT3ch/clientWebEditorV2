@@ -32,7 +32,7 @@ export const Text = ({ text, fontSize, color, editable }) => {
                 onKeyDown={(e) => {
                     if (e.key === "Enter") {
                         e.preventDefault(); // Evita il comportamento predefinito
-                        setProp(props => props.text += "\n");
+                        setProp(props => props.text += "\n"); // Aggiungi una nuova riga
                     }
                 }}
                 style={{ fontSize: `${fontSize}px`, color, whiteSpace: "pre-line"}}
