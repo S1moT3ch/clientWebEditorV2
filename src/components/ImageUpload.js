@@ -12,10 +12,13 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
     } = useNode();
 
     const [imageSrc, setImageSrc] = useState(src || ""); // Inizializza con l'immagine passata
-    const [dimensions, setDimensions] = useState({ width, height });
+    const [dimensions, setDimensions] = useState({ width, height }); //Stato delle dimensione dell'immagine
+    const [aspectRatio, setAspectRatio] = useState(width / height); //Rapporto d'aspetto
     const [imageLoaded, setImageLoaded] = useState(false); // Stato per il caricamento dell'immagine
     const imgRef = useRef(null); // Riferimento per l'immagine
     const [dragging, setDragging] = useState(false); // Stato per determinare se si sta draggando
+
+    const prevSrc = useRef(src);
 
     // Funzione per gestire il caricamento dell'immagine tramite file input
     const handleImageUpload = (event) => {
@@ -30,29 +33,47 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
         }
     };
 
+    // Sincronizzazione delle props di larghezza, altezza e rapporto d'aspetto delle immagini
+    // ogni qualvolta esse cambiano (neceserrario per la deserializzazione)
+    useEffect(() => {
+        setDimensions({ width, height });
+        setAspectRatio(width / height);
+    }, [width, height]);
+
     // Effetto per il caricamento dell'immagine
     useEffect(() => {
         if (imgRef.current) {
             imgRef.current.onload = () => {
                 setImageLoaded(true);
-                const imgWidth = imgRef.current.naturalWidth;
-                const imgHeight = imgRef.current.naturalHeight;
 
-                const maxDimension = 500;
-                const ratio = Math.min(maxDimension / imgWidth, maxDimension / imgHeight);
+                // Se si tratta di una nuova immagine, vengono ricalcolate le dimensioni
+                if (src !== prevSrc.current) {
+                    const imgWidth = imgRef.current.naturalWidth;
+                    const imgHeight = imgRef.current.naturalHeight;
 
-                setDimensions({
-                    width: imgWidth * ratio,
-                    height: imgHeight * ratio,
-                });
+                    const maxDimension = 500;
+                    const ratio = Math.min(maxDimension / imgWidth, maxDimension / imgHeight);
 
-                setProp((props) => {
-                    props.width = imgWidth * ratio;
-                    props.height = imgHeight * ratio;
-                });
+                    const newDims = {
+                        width: imgWidth * ratio,
+                        height: imgHeight * ratio,
+                    }
+
+                    setDimensions(newDims);
+                    setAspectRatio(imgWidth/ imgHeight); //rapporto tra le dimensioni originali dell'immagine
+
+                    setProp((props) => {
+                        props.width = imgWidth * ratio;
+                        props.height = imgHeight * ratio;
+                    });
+                }
             };
         }
-    }, [imageSrc]);
+    }, [imageSrc, setProp]);
+
+    useEffect(() => {
+        setImageSrc(src || "")
+    },[src]);
 
     const isFreeCanvas = document.getElementById("ROOT").classList.contains("free-canvas");
     const isGridCanvas = document.getElementById("ROOT").style.display === "grid";
@@ -65,6 +86,7 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
             size={{ width: dimensions.width, height: dimensions.height }}
             minWidth={50}
             minHeight={50}
+            lockAspectRatio={aspectRatio} // Mantiene il rapporto durante il ridimensionamento
             enable={{
                 bottomRight: true,
             }}
@@ -74,32 +96,25 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
                 const newHeight = ref.offsetHeight;
 
                 // Mantieni il rapporto di aspetto dell'immagine durante il ridimensionamento
-                const aspectRatio = dimensions.width / dimensions.height;
                 const newHeightBasedOnWidth = newWidth / aspectRatio;
                 const newWidthBasedOnHeight = newHeight * aspectRatio;
 
-                // Se il nuovo valore di larghezza è maggiore della larghezza originale, aggiorna la dimensione
+                let newDims; //array per contenere le nuove dimensioni
+
+                // Se il nuovo valore di larghezza è maggiore della larghezza originale, aggiorna la dimensione,
+                // altrimenti basa il ridimensionamento sulla base del nuovo valore di altezza
                 if (newHeightBasedOnWidth <= newHeight) {
-                    setDimensions({
-                        width: newWidth,
-                        height: newHeightBasedOnWidth, // Mantieni il rapporto
-                    });
-
-                    setProp((props) => {
-                        props.width = newWidth;
-                        props.height = newHeightBasedOnWidth;
-                    });
+                    newDims = { width: newWidth, height: newHeightBasedOnWidth}
                 } else {
-                    setDimensions({
-                        width: newWidthBasedOnHeight, // Mantieni la stessa altezza
-                        height: newHeight,
-                    });
-
-                    setProp((props) => {
-                        props.width = newWidthBasedOnHeight;
-                        props.height = newHeight;
-                    });
+                    newDims = { width: newWidthBasedOnHeight, height: newHeight}
                 }
+
+                setDimensions(newDims);
+
+                setProp((props) => {
+                    props.width = newDims.width;
+                    props.height = newDims.height;
+                })
             }}
             style={{
                 zIndex: 0,
@@ -152,6 +167,7 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
                         <span style={{ fontSize: "24px", color: "#aaa" }}>+</span>
                         <input
                             type="file"
+                            accept="image/"
                             hidden
                             onChange={handleImageUpload}
                         />
@@ -177,7 +193,46 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
     );
 };
 
+//Settings per il componente ImageUpload
+const ImageUploadSettings = () => {
+    const {
+        actions: { setProp },
+        src
+    } = useNode(node => ({
+        src: node.data.props.src
+    }));
+
+    //Funzione caricamento nuova immagine
+    const handleImageChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setProp((props) => (props.src = e.target.result)); // Salvo l'immagine nell'editor
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    //pannello Settings
+    return (
+        <div style={{ padding: "10px" }}>
+            <input
+                type="file"
+                accept="image/"
+                style={{ display: "none" }}
+                id="img-upload-settings-input"
+                onChange={handleImageChange}
+            />
+            <label htmlFor="img-upload-settings-input">
+                <Button variant="contained" component="span">
+                    Upload a new image
+                </Button>
+            </label>
+        </div>
+    )
+}
 ImageUpload.craft = {
     props: { src: "", width: 200, height: 200 },
-    related: {},
+    related: { settings: ImageUploadSettings},
 };
