@@ -4,7 +4,7 @@ import { Box, Button } from "@mui/material";
 import { Resizable } from "re-resizable";
 
 // Placeholder + image upload
-export const ImageUpload = ({ src, width = 200, height = 200 }) => {
+export const ImageUpload = ({ src, width = 200, height = 200, aspectRatio = 1 }) => {
     const {
         connectors: { connect, drag }, id,
         actions: { setProp },
@@ -13,7 +13,7 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
 
     const [imageSrc, setImageSrc] = useState(src || ""); // Inizializza con l'immagine passata
     const [dimensions, setDimensions] = useState({ width, height }); //Stato delle dimensione dell'immagine
-    const [aspectRatio, setAspectRatio] = useState(width / height); //Rapporto d'aspetto
+    const [aspectRatioState, setAspectRatioState] = useState(aspectRatio || width / height); //Rapporto d'aspetto
     const [imageLoaded, setImageLoaded] = useState(false); // Stato per il caricamento dell'immagine
     const imgRef = useRef(null); // Riferimento per l'immagine
     const [dragging, setDragging] = useState(false); // Stato per determinare se si sta draggando
@@ -34,11 +34,15 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
     };
 
     // Sincronizzazione delle props di larghezza, altezza e rapporto d'aspetto delle immagini
-    // ogni qualvolta esse cambiano (neceserrario per la deserializzazione)
+    // ogni qualvolta esse cambiano (neceserrario per la deserializzazione e per undo/redo)
     useEffect(() => {
         setDimensions({ width, height });
-        setAspectRatio(width / height);
-    }, [width, height]);
+        if (aspectRatio) {
+            setAspectRatioState(aspectRatio);
+        } else {
+            setAspectRatioState(width / height);
+        }
+    }, [aspectRatio, width, height]);
 
     // Effetto per il caricamento dell'immagine
     useEffect(() => {
@@ -60,7 +64,7 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
                     }
 
                     setDimensions(newDims);
-                    setAspectRatio(imgWidth/ imgHeight); //rapporto tra le dimensioni originali dell'immagine
+                    setAspectRatioState(imgWidth/ imgHeight); //rapporto tra le dimensioni originali dell'immagine
 
                     setProp((props) => {
                         props.width = imgWidth * ratio;
@@ -86,7 +90,7 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
             size={{ width: dimensions.width, height: dimensions.height }}
             minWidth={50}
             minHeight={50}
-            lockAspectRatio={aspectRatio} // Mantiene il rapporto durante il ridimensionamento
+            lockAspectRatio={aspectRatioState} // Mantiene il rapporto durante il ridimensionamento
             enable={{
                 bottomRight: true,
             }}
@@ -96,8 +100,8 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
                 const newHeight = ref.offsetHeight;
 
                 // Mantieni il rapporto di aspetto dell'immagine durante il ridimensionamento
-                const newHeightBasedOnWidth = newWidth / aspectRatio;
-                const newWidthBasedOnHeight = newHeight * aspectRatio;
+                const newHeightBasedOnWidth = newWidth / aspectRatioState;
+                const newWidthBasedOnHeight = newHeight * aspectRatioState;
 
                 let newDims; //array per contenere le nuove dimensioni
 
@@ -114,6 +118,7 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
                 setProp((props) => {
                     props.width = newDims.width;
                     props.height = newDims.height;
+                    props.aspectRatio = aspectRatioState;
                 })
             }}
             style={{
@@ -233,6 +238,6 @@ const ImageUploadSettings = () => {
     )
 }
 ImageUpload.craft = {
-    props: { src: "", width: 200, height: 200 },
+    props: { src: "", width: 200, height: 200, aspectRatio: null },
     related: { settings: ImageUploadSettings},
 };

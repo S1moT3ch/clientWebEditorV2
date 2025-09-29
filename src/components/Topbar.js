@@ -9,21 +9,16 @@ import { saveAs } from "file-saver";
 
 import "../App.css";
 import {useEditor} from "@craftjs/core";
+import {UndoRedo} from "./UndoRedo";
 
 export const Topbar = ({ layout, setLayout, rows, setRows, columns, setColumns, width, setWidth, height, setHeight }) => {
     const { query, actions } = useEditor();
+
     const [dropdown, setDropdown] = useState(null);
     const [snackbarMessage, setSnackbarMessage] = useState();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [stateToLoad, setStateToLoad] = useState("");
     const [loadMode, setLoadMode] = useState("jsonZip"); //scelta del file da caricare: html, zip o json
-
-    //Stack per la gestione di operazioni di undo/redo
-    const [history, setHistory] = useState(() => ({
-        undo: [],
-        redo: []
-    }));
-
 
     const handleMenuClick = (event) => {
         setDropdown(event.currentTarget);
@@ -197,56 +192,8 @@ export const Topbar = ({ layout, setLayout, rows, setRows, columns, setColumns, 
         });
     };
 
-    //Funzione per aggiungere lo stato corrente allo stack di undo
-    const pushToHistory = () => {
-        setHistory(prevHistory => ({
-            undo: [...prevHistory.undo, query.serialize()],
-            redo: []
-        }));
-    };
 
 
-    // Aggiorna lo stack ogni volta che cambia il layout
-    // o le dimensioni (se non è il primo render)
-    useEffect(() => {
-        if (history.undo.length === 0) {
-            setHistory({ undo: [query.serialize()], redo: [] });
-        } else {
-            pushToHistory();
-        }
-    }, [layout, rows, columns, width, height]);
-
-    //Funzione per ripristinare uno stato precedente
-    const handleUndo = () => {
-        setHistory(prev => {
-            if (prev.undo.length === 0) return prev;
-            const newUndo = [...prev.undo];
-            const last = newUndo.pop();
-
-            const newRedo = [...prev.redo, query.serialize()];
-
-            actions.deserialize(last);
-
-            return { undo: newUndo, redo: newRedo };
-        });
-    };
-
-
-
-    //Funzione per ripristinare uno stato "futuro"
-    const handleRedo = () => {
-        setHistory(prev => {
-            if (prev.redo.length === 0) return prev;
-            const newRedo = [...prev.redo];
-            const last = newRedo.pop();
-
-            const newUndo = [...prev.undo, query.serialize()];
-
-            actions.deserialize(last);
-
-            return { undo: newUndo, redo: newRedo };
-        });
-    };
 
     return (
         <Box px={1} py={1} mt={3} mb={1} bgcolor={"rgba(0, 0, 0, 0.1)"} style={{display:"flex", flexDirection:"row", borderRadius:"20px"}}>
@@ -320,12 +267,7 @@ export const Topbar = ({ layout, setLayout, rows, setRows, columns, setColumns, 
 
             {/*Bottoni per effettuare undo/redo*/}
             <Box display="flex" alignItems="center" ml={2}>
-                <IconButton onClick={handleUndo} disabled={history.undo.length === 0}>
-                    <UndoIcon />
-                </IconButton>
-                <IconButton onClick={handleRedo} disabled={history.redo.length === 0}>
-                    <RedoIcon />
-                </IconButton>
+                <UndoRedo/>
             </Box>
 
             {/*Bottone per salvare HTML e JSON*/}
