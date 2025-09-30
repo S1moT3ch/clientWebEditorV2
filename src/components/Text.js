@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import { useNode } from "@craftjs/core";
 import ContentEditable from "react-contenteditable";
-import { FormControl, FormControlLabel, FormLabel, Slider, Switch } from "@mui/material";
+import {FormControl, FormControlLabel, FormLabel, MenuItem, Select, Slider, Switch} from "@mui/material";
 import { HexColorPicker } from "react-colorful";
 
-export const Text = ({ text, fontSize, color, editable }) => {
+export const Text = ({ text, fontSize, color, editable, fontFamily, fontWeight }) => {
     const {
         connectors: { connect, drag }, id,
         actions: { setProp }, isSelected
@@ -35,7 +35,13 @@ export const Text = ({ text, fontSize, color, editable }) => {
                         setProp(props => props.text += "\n"); // Aggiungi una nuova riga
                     }
                 }}
-                style={{ fontSize: `${fontSize}px`, color, whiteSpace: "pre-line"}}
+                style={{
+                    fontSize: `${fontSize}px`,
+                    color,
+                    whiteSpace: "pre-line",
+                    fontFamily: fontFamily || "Poppins",
+                    fontWeight: fontWeight || "normal"
+                }}
                 disabled={!editable} // Disabilita ContentEditable se non è in modalità editabile
             />
         </div>
@@ -45,11 +51,12 @@ export const Text = ({ text, fontSize, color, editable }) => {
 // Settings per il componente Text
 const TextSettings = () => {
     const {
-        actions: { setProp }, fontSize, fontWeight, editable
+        actions: { setProp }, fontSize, fontWeight, editable, fontFamily
     } = useNode((node) => ({
         fontSize: node.data.props.fontSize,
         fontWeight: node.data.props.fontWeight,
-        editable: node.data.props.editable // Otteniamo la proprietà editable dal nodo
+        editable: node.data.props.editable, // Otteniamo la proprietà editable dal nodo
+        fontFamily: node.data.props.fontFamily, // Otteniamo propietà fontFamily dal nodo
     }));
 
     return (
@@ -79,6 +86,35 @@ const TextSettings = () => {
                     setProp(props => props.color = color)
                 }} />
             </FormControl>
+            {/* Form per cambiare font della scrittura */}
+            <FormControl fullWidth margin="normal" component="fieldset">
+                <FormLabel className="custom-label">Font Family</FormLabel>
+                <Select
+                    value={fontFamily || "Poppins"}
+                    onChange={(e) =>
+                        setProp((props) => (props.fontFamily = e.target.value))
+                    }
+                >
+                    <MenuItem value="Poppins">Poppins</MenuItem>
+                    <MenuItem value="Roboto">Roboto</MenuItem>
+                    <MenuItem value="Arial">Arial</MenuItem>
+                    <MenuItem value="Times New Roman">Times New Roman</MenuItem>
+                </Select>
+            </FormControl>
+
+            <FormControl fullWidth margin="normal" component="fieldset">
+                <FormLabel className="custom-label">Font Weight</FormLabel>
+                <Select
+                    value={fontWeight || "400"}
+                    onChange={(e) =>
+                        setProp((props) => (props.fontWeight = e.target.value))
+                    }
+                >
+                    <MenuItem value="200">Light</MenuItem>
+                    <MenuItem value="400">Normal</MenuItem>
+                    <MenuItem value="700">Bold</MenuItem>
+                </Select>
+            </FormControl>
         </>
     );
 }
@@ -88,7 +124,9 @@ Text.craft = {
         text: "Default text",
         fontSize: 20,
         color: "#000",
-        editable: false // La proprietà editabile di default è false
+        editable: false, // La proprietà editabile di default è false
+        fontFamily: "Poppins",
+        fontWeight: "normal"
     },
     related: {
         settings: TextSettings

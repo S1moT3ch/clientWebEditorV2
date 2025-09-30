@@ -4,7 +4,7 @@ import {useNode} from "@craftjs/core";
 import {HexColorPicker} from "react-colorful";
 import "../App.css";
 
-export const Button = ({ color = "#0000FF", colorText = "#ffffff",  width = 100, height = 50, children }) => {
+export const Button = ({ color = "#0000FF", colorText = "#ffffff",  width = 100, height = 50, children, borderRadius = 8, link }) => {
     const {
         connectors: { connect, drag }, id,
         actions: { setProp }, props
@@ -17,9 +17,8 @@ export const Button = ({ color = "#0000FF", colorText = "#ffffff",  width = 100,
     const ref = useRef(null);
 
 
-
-
-    return (
+    //Definizione componente bottone
+    const buttonEl = (
         <button className="base-btn" id={id}
             ref={(el) => {ref.current = el;
                 connect(drag(el));}}
@@ -29,12 +28,28 @@ export const Button = ({ color = "#0000FF", colorText = "#ffffff",  width = 100,
                 fontSize: "16px",
                 width: `${width}px`,
                 height: `${height}px`,
+                borderRadius: `${borderRadius}px`,
+                cursor: link ? "pointer" : "default",
             }}
                 onInput={(e) => setProp((e) => (props.children = e.target.children))}
         >
             {children}
         </button>
     );
+
+    //Bottone con link
+    return link ? (
+        <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: "none" }}
+        >
+            {buttonEl}
+        </a>
+    ) : (
+        buttonEl
+    )
 };
 
 
@@ -54,6 +69,16 @@ const ButtonSettings = () => {
                     maxRows={2}
                 />
             </FormControl>
+
+            {/* Form per gestione link */}
+            <FormControl size="small" component="fieldset">
+                <FormLabel className="custom-label">Link URL</FormLabel>
+                <TextField
+                    value={props.link || ""}
+                    onChange={(e) => setProp((props) => (props.link = e.target.value))}
+                    placeholder="https://example.com"
+                />
+            </FormControl>
             <FormControl size="small" component="fieldset">
                 <FormLabel className="custom-label">Width</FormLabel>
                 <Slider
@@ -70,6 +95,17 @@ const ButtonSettings = () => {
                     min={50}
                     max={1000}
                     onChange={(_, value) => setProp((props) => (props.height = value))}
+                />
+            </FormControl>
+
+            {/* Form per controllo del raggio dei bordi */}
+            <FormControl size="small" component="fieldset">
+                <FormLabel className="custom-label">Border Radius</FormLabel>
+                <Slider
+                    defaultValue={props.borderRadius}
+                    min={0}
+                    max={20}
+                    onChange={(_, value) => setProp((props) => (props.borderRadius = value))}
                 />
             </FormControl>
             <FormControl component="fieldset">

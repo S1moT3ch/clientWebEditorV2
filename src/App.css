@@ -101,7 +101,7 @@
 .custom-paper {
     position: fixed;
     overflow-y: scroll;
-    height: 100%;
+    height: 100vh;
     width: 300px;
     top: 0;
 }

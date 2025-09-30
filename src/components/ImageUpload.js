@@ -4,7 +4,7 @@ import { Box, Button } from "@mui/material";
 import { Resizable } from "re-resizable";
 
 // Placeholder + image upload
-export const ImageUpload = ({ src, width = 200, height = 200, aspectRatio = 1 }) => {
+export const ImageUpload = ({ src, width = 200, height = 200 }) => {
     const {
         connectors: { connect, drag }, id,
         actions: { setProp },
@@ -13,7 +13,7 @@ export const ImageUpload = ({ src, width = 200, height = 200, aspectRatio = 1 })
 
     const [imageSrc, setImageSrc] = useState(src || ""); // Inizializza con l'immagine passata
     const [dimensions, setDimensions] = useState({ width, height }); //Stato delle dimensione dell'immagine
-    const [aspectRatioState, setAspectRatioState] = useState(aspectRatio || width / height); //Rapporto d'aspetto
+    const [aspectRatioState, setAspectRatioState] = useState(width / height); //Rapporto d'aspetto
     const [imageLoaded, setImageLoaded] = useState(false); // Stato per il caricamento dell'immagine
     const imgRef = useRef(null); // Riferimento per l'immagine
     const [dragging, setDragging] = useState(false); // Stato per determinare se si sta draggando
@@ -37,12 +37,8 @@ export const ImageUpload = ({ src, width = 200, height = 200, aspectRatio = 1 })
     // ogni qualvolta esse cambiano (neceserrario per la deserializzazione e per undo/redo)
     useEffect(() => {
         setDimensions({ width, height });
-        if (aspectRatio) {
-            setAspectRatioState(aspectRatio);
-        } else {
-            setAspectRatioState(width / height);
-        }
-    }, [aspectRatio, width, height]);
+        setAspectRatioState(width / height);
+    }, [ width, height]);
 
     // Effetto per il caricamento dell'immagine
     useEffect(() => {
@@ -238,6 +234,6 @@ const ImageUploadSettings = () => {
     )
 }
 ImageUpload.craft = {
-    props: { src: "", width: 200, height: 200, aspectRatio: null },
+    props: { src: "", width: 200, height: 200 },
     related: { settings: ImageUploadSettings},
 };
