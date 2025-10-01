@@ -9,10 +9,13 @@ import { Button } from '../components/Button';
 import { Text } from '../components/Text';
 import { ImageUpload } from '../components/ImageUpload';
 import { Card, CardTop, CardBottom } from '../components/Card';
+import { ResizableRect } from "../components/ResizableRect";
+import { Arrow } from "../components/Arrow";
 import { Topbar } from '../components/Topbar';
 import "../App.css";
 
 import { Editor, Frame, Element} from "@craftjs/core";
+import {DraggableItem} from "../components/DraggableItem";
 
 //editor avvolge tutta l'applicazione per fornire contesto ai componenti modificabili
 //definiti nella prop resolver
@@ -148,7 +151,7 @@ export default function App() {
 
     return (
         <div style={{ display: "flex" }}>
-            <Editor resolver={{ Card, Button, Text, Container, CardTop, CardBottom, ImageUpload }}>
+            <Editor resolver={{ Card, Button, Text, Container, CardTop, CardBottom, ImageUpload, ResizableRect, Arrow, DraggableItem }}>
                 <Grid className="home-grid" container spacing={3} margin={0.5}>
                     <Grid className="side-grid" item xs>
                         <h2 className="custom-typography" align="center">Page Editor</h2>

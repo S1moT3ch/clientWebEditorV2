@@ -55,7 +55,7 @@ export const Card = ({backgroundColor, padding = 20, margin = 0}) => {
     return (
             <Container backgroundColor={backgroundColor} padding={padding} margin={margin} style={{flexDirection:"column"}} >
                 <Element id="text" is={CardTop} canvas> //Canvas è un container che permette di droppare elementi al suo interno in questo caso solo testo
-                    <Text text="Title" fontSize={20} />
+                    <Text text="Title" fontSize={20} /><br/> //Si va a capo per la formattazione
                     <Text text="Subtitle" fontSize={15} />
                 </Element>
                 <Element id="button" is={CardBottom} canvas> //Canvas è un container che permette di droppare elementi al suo interno in questo caso solo bottoni

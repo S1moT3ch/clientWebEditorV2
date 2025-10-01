@@ -7,6 +7,8 @@ import { Button } from "./Button";
 import { Text } from "./Text";
 import { Container } from "./Container";
 import { Card } from "./Card";
+import { ResizableRect } from "./ResizableRect";
+import { Arrow } from "./Arrow";
 import "../App.css";
 
 export const Toolbox = () => {
@@ -28,8 +30,8 @@ export const Toolbox = () => {
                         Text
                     </MaterialButton>
                 </Grid>
-                <Grid container direction="column" item>
-                    <MaterialButton  className="tool-btn" ref={(ref) => connectors.create(ref, <Element is={Container}  canvas />)} variant="contained">
+                <Grid container direction="column" item>{/*Uso di un text vuoto per dare consistenza e visibilità al container*/}
+                    <MaterialButton  className="tool-btn" ref={(ref) => connectors.create(ref, <Element is={Container}  canvas padding={20}><Text text=""/></Element>)} variant="contained">
                         Container
                     </MaterialButton>
                 </Grid>
@@ -41,6 +43,16 @@ export const Toolbox = () => {
                 <Grid container direction="column" item>
                     <MaterialButton className="tool-btn" ref={(ref) => connectors.create(ref, <ImageUpload />)} variant="contained">
                         Image
+                    </MaterialButton>
+                </Grid>
+                <Grid container direction="column" item>
+                    <MaterialButton className="tool-btn" ref={(ref) => connectors.create(ref, <ResizableRect />)} variant="contained">
+                        Rectangle
+                    </MaterialButton>
+                </Grid>
+                <Grid container direction="column" item>
+                    <MaterialButton className="tool-btn" ref={(ref) => connectors.create(ref, <Arrow />)} variant="contained">
+                        Arrow
                     </MaterialButton>
                 </Grid>
             </Grid>
