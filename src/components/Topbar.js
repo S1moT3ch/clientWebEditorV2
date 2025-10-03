@@ -20,6 +20,21 @@ export const Topbar = ({ layout, setLayout, rows, setRows, columns, setColumns, 
     const [stateToLoad, setStateToLoad] = useState("");
     const [loadMode, setLoadMode] = useState("jsonZip"); //scelta del file da caricare: html, zip o json
 
+    //Listener globale alla tastiera per gestire le shortcut
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.ctrlKey && !e.shiftKey && e.key.toLowerCase() === "s") {
+                e.preventDefault();
+                saveLayout()
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [dialogOpen]);
     const handleMenuClick = (event) => {
         setDropdown(event.currentTarget);
     };

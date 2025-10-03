@@ -49,10 +49,11 @@ export const Text = ({ text, fontSize, color, editable, fontFamily, fontWeight }
              id={id}
              style={{
                  outline: isSelected ? "2px solid blue" : "none",
-                 //definizione di valori di altezza e larghezza
                  width: size.width,
                  height: size.height,
-                 display: "inline-block",
+                 display: "flex",
+                 alignItems: "center",
+                 justifyContent: "center",
             }}>
             <ContentEditable
                 html={text}

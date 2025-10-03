@@ -12,10 +12,7 @@ export const Button = ({ color = "#0000FF", colorText = "#ffffff",  width = 100,
         isSelected: state.events.selected,
     }));
 
-
-
     const ref = useRef(null);
-
 
     //Definizione componente bottone
     const buttonEl = (

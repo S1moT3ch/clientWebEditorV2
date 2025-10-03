@@ -29,6 +29,27 @@ export const UndoRedo = () => {
         actions.history.redo();
     };
 
+    //Listener globale alla tastiera per gestire le shortcut
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.ctrlKey && !e.shiftKey && e.key.toLowerCase() === "z") {
+                e.preventDefault();
+                handleUndo();
+            }
+            if ((e.ctrlKey && e.key.toLowerCase() === "y") || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "z")) {
+                e.preventDefault();
+                handleRedo();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [canUndo, canRedo]);
+
+
     return(
         <Box>
             <IconButton onClick={handleUndo} disabled={!canUndo}>

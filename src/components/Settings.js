@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {Box, Chip, Grid, Typography, Button as MaterialButton} from "@mui/material";
 import {useEditor} from "@craftjs/core";
 import "../App.css"
@@ -30,6 +30,22 @@ export const Settings = () => {
             selected
         }
     });
+
+    //Listener globale alla tastiera per gestire le shortcut
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === "Delete" && selected?.isDeletable) {
+                e.preventDefault();
+                actions.delete(selected.id);
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [selected, actions]);
 
 
 

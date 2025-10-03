@@ -45,8 +45,8 @@ export const Toolbox = () => {
                         Image
                     </MaterialButton>
                 </Grid>
-                <Grid container direction="column" item>
-                    <MaterialButton className="tool-btn" ref={(ref) => connectors.create(ref, <ResizableRect />)} variant="contained">
+                <Grid container direction="column" item>{/*Rettangolo con testo all'interno*/}
+                    <MaterialButton className="tool-btn" ref={(ref) => connectors.create(ref, <ResizableRect><Text/></ResizableRect>)} variant="contained">
                         Rectangle
                     </MaterialButton>
                 </Grid>
