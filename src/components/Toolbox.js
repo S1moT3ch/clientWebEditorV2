@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {
     Box,
     Grid,
@@ -8,6 +8,7 @@ import {
     AccordionDetails,
     Typography
 } from "@mui/material";
+
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Element, useEditor } from "@craftjs/core";
 import { ImageUpload } from "./ImageUpload";
@@ -20,14 +21,40 @@ import { Arrow } from "./Arrow";
 import "../App.css";
 
 export const Toolbox = ({ layout }) => {
-    const { connectors } = useEditor();
+    const { connectors, query }
+        = useEditor((state) => ({
+            selected: state.events.selected,
+        }));
+
+    const [expanded, setExpanded] = useState(true);
+    const [selectedNode, setSelectedNode] = useState(null);
 
     const isFreeCanvas = layout === "free"; //Logica per verificare la modalità del layout
+
+    //Sottoscrizione ai cambiamenti del nodo selezionato
+
+
+    // Se non è selezionato nulla, apri automaticamente la tendina
+    useEffect(() => {
+        if (!selectedNode) {
+            setExpanded(true);
+        }
+    }, [selectedNode]);
+
+    //Funzione per gestire l'apertura della tendina toolbox
+    const handleAccordionChange = (_, newExpanded) => {
+        setExpanded(newExpanded);
+    };
+
 
     return (
         <Box className="right-panel">
             {/*Menù a tendina per il toolbox*/}
-            <Accordion sx={{ borderRadius: "20px", overflow: "hidden"}}>
+            <Accordion
+                sx={{ borderRadius: "20px", overflow: "hidden"}}
+                expanded={expanded}
+                onChange={handleAccordionChange}
+            >
                 <AccordionSummary
                     className="right-panel"
                     expandIcon={<ExpandMoreIcon sx={{ color: "#ffffff" }} />}
@@ -38,10 +65,6 @@ export const Toolbox = ({ layout }) => {
                         color: "#ffffff",
                         fontWeight: "bold",
                         borderRadius: "20px",
-                        minHeight: "48px",
-                        '&.Mui-expanded': {
-                            borderBottomLeftRadius: "0px",
-                            borderBottomRightRadius: "0px" }
                     }}
                 >
                     <Typography variant="h6">Components</Typography>

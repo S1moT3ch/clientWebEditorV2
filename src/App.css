@@ -59,6 +59,25 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
+/* Arrotonda l'intero Accordion di Toolbox */
+.MuiAccordion-root {
+    border-radius: 20px !important;
+    overflow: hidden;
+}
+
+/* Arrotonda la parte superiore */
+.MuiAccordionSummary-root {
+    border-top-left-radius: 20px !important;
+    border-top-right-radius: 20px !important;
+}
+
+/* Arrotonda la parte inferiore quando l’accordion è chiuso */
+.MuiAccordionDetails-root {
+    border-bottom-left-radius: 20px !important;
+    border-bottom-right-radius: 20px !important;
+}
+
+
 .tool-btn {
     border-radius: 25px !important;
     background-color: rgba(84, 136, 174, 0.79) !important;
