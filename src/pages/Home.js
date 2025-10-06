@@ -50,6 +50,7 @@ export default function App() {
         e.dataTransfer.setData("text/plain", currentEl);
     }
 
+    //Funzione per gestire il drop dei componenti
     const handleDrop = (e) => {
         e.preventDefault();
         const container = document.getElementById("ROOT");
@@ -74,15 +75,43 @@ export default function App() {
 
             updateNodePosition(nodeId, gridRow, gridColumn, true);
         } else {
-            const rect = container.getBoundingClientRect();
-            const left = e.clientX - rect.left;
-            const top = e.clientY - rect.top;
+            e.preventDefault();
+            const container = document.getElementById("ROOT");
+            if (!container) return;
 
-            updateNodePosition(nodeId, top, left, false);
+            const type = e.dataTransfer.getData("component-type");
+            if (!type) return;
+
+            const rect = container.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const { actions, query } = editorRef.current;
+
+            const componentMap = {
+                Arrow,
+                Button,
+                Text,
+                ImageUpload,
+                Card,
+                ResizableRect,
+                Container,
+            };
+
+            const Component = componentMap[type];
+            if (!Component) return;
+
+            //Crea un NodeTree valido con le props personalizzate
+            const nodeTree = query.parseReactElement(
+                <Component x={x} y={y} />
+            ).toNodeTree();
+
+            actions.addNodeTree(nodeTree, "ROOT");
         }
     };
 
     const containerRef = useRef(null);
+    const editorRef = useRef(null);
 
     useEffect(() => {
         const container = containerRef.current;
@@ -151,12 +180,12 @@ export default function App() {
 
     return (
         <div style={{ display: "flex" }}>
-            <Editor resolver={{ Card, Button, Text, Container, CardTop, CardBottom, ImageUpload, ResizableRect, Arrow, DraggableItem }}>
+            <Editor ref={editorRef} resolver={{ Card, Button, Text, Container, CardTop, CardBottom, ImageUpload, ResizableRect, Arrow, DraggableItem }}>
                 <Grid className="home-grid" container spacing={3} margin={0.5}>
                     <Grid className="side-grid" item xs>
                         <h2 className="custom-typography" align="center">Page Editor</h2>
                         <Topbar {...{ layout, setLayout, rows, setRows, columns, setColumns, width, setWidth, height, setHeight }} />
-                        <div onDragStart={getDraggedElementId} onDrop={handleDrop} onDragEnd={(e) => e.preventDefault()}>
+                        <div onDragStart={getDraggedElementId} onDragOver={(e) => e.preventDefault()} onDrop={handleDrop} onDragEnd={(e) => e.preventDefault()}>
                             <Frame>
                                 <Element is={Container} padding={10} canvas ref={containerRef}>
                                     <Card />
@@ -169,7 +198,7 @@ export default function App() {
                     </Grid>
                     <Grid item xs={2} mr={5}>
                         <Paper className="custom-paper">
-                            <Toolbox />
+                            <Toolbox layout={layout}/> {/*Per rendering condizionale*/}
                             <Settings />
                         </Paper>
                     </Grid>

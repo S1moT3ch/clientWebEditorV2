@@ -12,6 +12,7 @@ export const ResizableRect = ({ width, height, backgroundColor, borderRadius, bo
     } = useNode();
 
     return (
+        //Uso di React-rnd
         <Rnd
             size={{ width, height }}
             position={{ x, y }}
@@ -41,11 +42,12 @@ export const ResizableRect = ({ width, height, backgroundColor, borderRadius, bo
         >
             <div
                 ref={(ref) => connect(drag(ref))} // Collegamento di solo un nodo DOM
-                style={{ width: "100%", height: "100%" }}
-            />
-            <div
-                ref={(ref) => connect(drag(ref))}
-                style={{ width: "100%", height: "100%" }}
+                style={{ width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                }}
             >
                 {children} {/* Il rettangolo può contenere figli */}
             </div>

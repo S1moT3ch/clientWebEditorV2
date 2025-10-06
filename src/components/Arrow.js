@@ -2,10 +2,11 @@ import React, {useEffect, useRef, useState} from "react";
 import { useNode, useEditor } from "@craftjs/core";
 import { ArrowMovement} from "./ArrowMovement";
 import {FormControl, FormLabel, TextField} from "@mui/material";
-import {HexColorPicker} from "react-colorful"; //componente di resize
+import {HexColorPicker} from "react-colorful";
+import {Rnd} from "react-rnd"; //componente di resize
 
 //Componente freccia
-export const Arrow = ({ color, strokeWidth, length, rotation, x, y }) => {
+export const Arrow = ({ color, strokeWidth, length, rotation, x, y, width = 100, height = 50 }) => {
     const { connectors: { connect, drag }, actions: {setProp}, isSelected } = useNode((state) => ({
         isSelected: state.events.selected,
     }));
@@ -33,61 +34,85 @@ export const Arrow = ({ color, strokeWidth, length, rotation, x, y }) => {
     };
 
     return (
-        <div
-            ref={(el) => {
-                ref.current = el;
-                connect(el);
-                if (!isResizing) drag(el); //Disabilita drag se resize attivo
+        <Rnd
+            bounds="parent"
+            size={{ width, height }}
+            position={{ x, y }}
+            onDragStop={(e, d) => {
+                setProp((props) => {
+                    props.x = d.x;
+                    props.y = d.y;
+                });
             }}
-            onDragEnd={handleDragEnd}
+            onResizeStop={(e, direction, ref, delta, position) => {
+                setProp((props) => {
+                    props.width = ref.offsetWidth;
+                    props.height = ref.offsetHeight;
+                    props.x = position.x;
+                    props.y = position.y;
+                });
+            }}
             style={{
                 position: "absolute",
                 transform: `rotate(${rotation}deg)`,
-                left: x,
-                top: y,
-                transformOrigin: "left center",
-                width: length,
-                height: 50,
-                cursor: "move",
-                userSelect: "none"
+                transformOrigin: "center center",
             }}
         >
-            {/* Contenitore comune per SVG e Rettangolo di ridimensionamento e rotazione*/}
-            <div style={{ position: "relative", width: "100%", height: "100%" }}>
-                {/* Freccia */}
-                <svg
-                    width="100%"
-                    height="100%"
-                    viewBox={`0 0 ${length} 50`}
-                    style={{ position: "absolute", left: 0, top: 0 }}
-                >
-                    <line
-                        x1="0"
-                        y1="25"
-                        x2={length - 20}
-                        y2="25"
-                        stroke={color}
-                        strokeWidth={strokeWidth}
-                    />
-                    <polygon points={`${length - 20},15 ${length},25 ${length - 20},35`} fill={color} />
-                </svg>
+            <div
+                ref={(el) => {
+                    ref.current = el;
+                    connect(el);
+                }}
+                //onDragEnd={handleDragEnd}
+                style={{
+                    //position: "absolute",
+                    transform: `rotate(${rotation}deg)`,
+                    left: x,
+                    top: y,
+                    transformOrigin: "left center",
+                    width: length,
+                    height: 50,
+                    cursor: "move",
+                    userSelect: "none"
+                }}
+            >
+                {/* Contenitore comune per SVG freccia e Rettangolo di ridimensionamento e rotazione*/}
+                <div style={{ position: "relative", width: "100%", height: "100%" }}>
+                    {/* Freccia */}
+                    <svg
+                        width="100%"
+                        height="100%"
+                        viewBox={`0 0 ${length} 50`}
+                        style={{ position: "absolute", left: 0, top: 0 }}
+                    >
+                        <line
+                            x1="0"
+                            y1="25"
+                            x2={length - 20}
+                            y2="25"
+                            stroke={color}
+                            strokeWidth={strokeWidth}
+                        />
+                        <polygon points={`${length - 20},15 ${length},25 ${length - 20},35`} fill={color} />
+                    </svg>
 
-                {/* Rettangolo con controlli */}
-                {isSelected && (
-                    <ArrowMovement
-                        width={length}
-                        height={50}
-                        rotation={0}
-                        onResizeStart={() => setIsResizing(true)}
-                        onResize={({ width }) => setProp(props => (props.length = width))}
-                        onResizeStop={() => setIsResizing(false)}
-                        onRotateStart={() => setIsRotating(true)}
-                        onRotate={(newRotation) => setProp(props => (props.rotation = newRotation))}
-                        onRotateStop={() => setIsRotating(false)}
-                    />
-                )}
+                    {/* Rettangolo con controlli */}
+                    {isSelected && (
+                        <ArrowMovement
+                            width={length}
+                            height={50}
+                            rotation={0}
+                            onResizeStart={() => setIsResizing(true)}
+                            onResize={({ width }) => setProp(props => (props.length = width))}
+                            onResizeStop={() => setIsResizing(false)}
+                            onRotateStart={() => setIsRotating(true)}
+                            onRotate={(newRotation) => setProp(props => (props.rotation = newRotation))}
+                            onRotateStop={() => setIsRotating(false)}
+                        />
+                    )}
+                </div>
             </div>
-        </div>
+        </Rnd>
     );
 };
 
@@ -110,13 +135,15 @@ const ArrowSettings = () => {
 };
 
 Arrow.craft = {
-    props: {
+    props:  {
         color: "#000",
         strokeWidth: 2,
         length: 100,
         rotation: 0,
         x: 0,
         y: 0,
+        width: 100,
+        height: 50
     },
     related: {
         settings: ArrowSettings
