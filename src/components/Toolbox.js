@@ -21,25 +21,40 @@ import { Arrow } from "./Arrow";
 import "../App.css";
 
 export const Toolbox = ({ layout }) => {
-    const { connectors, query }
-        = useEditor((state) => ({
-            selected: state.events.selected,
-        }));
+    const { connectors, actions, selected } = useEditor((state, query) => {
+        const [currentNodeId] = state.events.selected;
+        let selected;
+
+
+        if ( currentNodeId ) {
+            selected = {
+                id: currentNodeId,
+                name: state.nodes[currentNodeId].data.name,
+                settings: state.nodes[currentNodeId].related && state.nodes[currentNodeId].related.settings,
+                isDeletable: query.node(currentNodeId).isDeletable()
+
+            };
+        }
+
+        return {
+            selected
+        }
+    });
 
     const [expanded, setExpanded] = useState(true);
-    const [selectedNode, setSelectedNode] = useState(null);
 
     const isFreeCanvas = layout === "free"; //Logica per verificare la modalità del layout
 
-    //Sottoscrizione ai cambiamenti del nodo selezionato
-
-
-    // Se non è selezionato nulla, apri automaticamente la tendina
+    // Se non selezionato un nodo, chiudi automaticamente la tendina, altrimenti apri la tendina
     useEffect(() => {
-        if (!selectedNode) {
+        if (selected?.name) {
+            setExpanded(false);
+        } else {
             setExpanded(true);
         }
-    }, [selectedNode]);
+    }, [selected]);
+
+
 
     //Funzione per gestire l'apertura della tendina toolbox
     const handleAccordionChange = (_, newExpanded) => {
