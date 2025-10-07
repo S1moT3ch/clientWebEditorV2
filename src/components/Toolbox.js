@@ -19,6 +19,7 @@ import { Card } from "./Card";
 import { ResizableRect } from "./ResizableRect";
 import { Arrow } from "./Arrow";
 import "../App.css";
+import {ResizableRectWrapper} from "./ResizableRectWrapper";
 
 export const Toolbox = ({ layout }) => {
     const { connectors, actions, selected } = useEditor((state, query) => {
@@ -80,6 +81,10 @@ export const Toolbox = ({ layout }) => {
                         color: "#ffffff",
                         fontWeight: "bold",
                         borderRadius: "20px",
+                        "&.Mui-expanded": {
+                            borderBottomLeftRadius: "0px",
+                            borderBottomRightRadius: "0px"
+                        }
                     }}
                 >
                     <Typography variant="h6">Components</Typography>
@@ -148,17 +153,17 @@ export const Toolbox = ({ layout }) => {
                         {/* Componenti visibili solo in modalità free-canvas */}
                         {isFreeCanvas && (
                             <>
-                                <Grid container direction="column" item>
-                                    <MaterialButton
-                                        className="tool-btn"
-                                        ref={(ref) =>
-                                            connectors.create(ref, <ResizableRect><Text /></ResizableRect>)
-                                        }
-                                        variant="contained"
-                                    >
-                                        Rectangle
-                                    </MaterialButton>
-                                </Grid>
+                                <MaterialButton
+                                    className="tool-btn"
+                                    ref={(ref) => connectors.create(ref, <ResizableRectWrapper ><ResizableRect/></ResizableRectWrapper>)}
+                                    onDragStart={(e) =>
+                                        e.dataTransfer.setData("component-type", "ResizableRectWrapper")
+                                    }
+                                    variant="contained"
+                                >
+                                    Rectangle
+                                </MaterialButton>
+
 
                                 <Grid container direction="column" item>
                                     <MaterialButton

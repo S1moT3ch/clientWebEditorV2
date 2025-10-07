@@ -16,6 +16,7 @@ import "../App.css";
 
 import { Editor, Frame, Element} from "@craftjs/core";
 import {DraggableItem} from "../components/DraggableItem";
+import {ResizableRectWrapper} from "../components/ResizableRectWrapper";
 
 //editor avvolge tutta l'applicazione per fornire contesto ai componenti modificabili
 //definiti nella prop resolver
@@ -75,39 +76,37 @@ export default function App() {
 
             updateNodePosition(nodeId, gridRow, gridColumn, true);
         } else {
-            e.preventDefault();
-            const container = document.getElementById("ROOT");
-            if (!container) return;
+        //In modalità free canvas
+        const container = document.getElementById("ROOT");
+        if (!container) return;
 
-            const type = e.dataTransfer.getData("component-type");
-            if (!type) return;
+        const type = e.dataTransfer.getData("component-type");
+        if (!type) return;
 
-            const rect = container.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+        const rect = container.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
 
             const { actions, query } = editorRef.current;
-
             const componentMap = {
                 Arrow,
                 Button,
                 Text,
                 ImageUpload,
                 Card,
-                ResizableRect,
+                ResizableRectWrapper,
                 Container,
             };
 
             const Component = componentMap[type];
             if (!Component) return;
 
-            //Crea un NodeTree valido con le props personalizzate
             const nodeTree = query.parseReactElement(
                 <Component x={x} y={y} />
             ).toNodeTree();
 
             actions.addNodeTree(nodeTree, "ROOT");
-        }
+        };
     };
 
     const containerRef = useRef(null);
@@ -180,7 +179,7 @@ export default function App() {
 
     return (
         <div style={{ display: "flex" }}>
-            <Editor ref={editorRef} resolver={{ Card, Button, Text, Container, CardTop, CardBottom, ImageUpload, ResizableRect, Arrow, DraggableItem }}>
+            <Editor ref={editorRef} resolver={{ Card, Button, Text, Container, CardTop, CardBottom, ImageUpload, ResizableRect, ResizableRectWrapper, Arrow, DraggableItem }}>
                 <Grid className="home-grid" container spacing={3} margin={0.5}>
                     <Grid className="side-grid" item xs>
                         <h2 className="custom-typography" align="center">Page Editor</h2>
