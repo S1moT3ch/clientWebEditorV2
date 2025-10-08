@@ -11,7 +11,7 @@ import "../App.css";
 import {useEditor} from "@craftjs/core";
 import {UndoRedo} from "./UndoRedo";
 
-export const Topbar = ({ layout, setLayout, rows, setRows, columns, setColumns, width, setWidth, height, setHeight }) => {
+export const Topbar = ({ layout, setLayout, changeLayout, restorePreviousLayout, rows, setRows, columns, setColumns, width, setWidth, height, setHeight }) => {
     const { query, actions } = useEditor();
 
     const [dropdown, setDropdown] = useState(null);
@@ -44,7 +44,11 @@ export const Topbar = ({ layout, setLayout, rows, setRows, columns, setColumns, 
     };
 
     const handleLayoutChange = (newLayout) => {
-        setLayout(newLayout);
+        changeLayout(newLayout);
+        setDropdown(null);
+    };
+    const handleLayoutRestore = (prevLayout) => {
+        restorePreviousLayout(prevLayout);
         setDropdown(null);
     };
 
@@ -274,10 +278,14 @@ export const Topbar = ({ layout, setLayout, rows, setRows, columns, setColumns, 
                 open={Boolean(dropdown)}
                 onClose={handleMenuClose}
             >
-                <MenuItem onClick={() => handleLayoutChange("row")}>Horizontal</MenuItem>
+                <MenuItem onClick={() => changeLayout("row")}>Horizontal</MenuItem>
                 <MenuItem onClick={() => handleLayoutChange("column")}>Vertical</MenuItem>
                 <MenuItem onClick={() => handleLayoutChange("grid")}>Grid Display</MenuItem>
                 <MenuItem onClick={() => handleLayoutChange("free")}>Free Canvas</MenuItem>
+                <MenuItem onClick={() => restorePreviousLayout("row")}>Horizontal</MenuItem>
+                <MenuItem onClick={() => handleLayoutRestore("column")}>Vertical</MenuItem>
+                <MenuItem onClick={() => handleLayoutRestore("grid")}>Grid Display</MenuItem>
+                <MenuItem onClick={() => handleLayoutRestore("free")}>Free Canvas</MenuItem>
             </Menu>
 
             {/*Bottoni per effettuare undo/redo*/}

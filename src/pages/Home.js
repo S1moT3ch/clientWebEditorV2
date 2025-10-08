@@ -28,10 +28,34 @@ import {ResizableRectWrapper} from "../components/ResizableRectWrapper";
 
 export default function App() {
     const [layout, setLayout] = useState("column");
+    const [prevLayout, setPrevLayout] = useState(null);
     const [rows, setRows] = useState(2);
     const [columns, setColumns] = useState(2);
     const [width, setWidth] = useState("fit-content");
     const [height, setHeight] = useState("fit-content");
+
+    //Funzione per salvare lo stato attuale del layout
+    const changeLayout = (newLayout) => {
+        setPrevLayout({
+            layout,
+            rows,
+            columns,
+            width,
+            height
+        });
+        setLayout(newLayout);
+    };
+
+    //Funzione per ripristinare un layout precedente
+    const restorePreviousLayout = () => {
+        if (prevLayout) {
+            setLayout(prevLayout.layout);
+            setRows(prevLayout.rows);
+            setColumns(prevLayout.columns);
+            setWidth(prevLayout.width);
+            setHeight(prevLayout.height);
+        }
+    };
 
     const updateNodePosition = (id, gridRow, gridColumn, isGrid) => {
         const node = document.getElementById(id);
@@ -41,6 +65,7 @@ export default function App() {
             node.style.gridRowStart = gridRow;
             node.style.gridColumnStart = gridColumn;
         } else {
+            node.style.position = "absolute";
             node.style.top = `${gridRow}px`;
             node.style.left = `${gridColumn}px`;
         }
@@ -76,41 +101,46 @@ export default function App() {
 
             updateNodePosition(nodeId, gridRow, gridColumn, true);
         } else {
-        //In modalità free canvas
-        const container = document.getElementById("ROOT");
-        if (!container) return;
+            const rect = container.getBoundingClientRect();
+            const left = e.clientX - rect.left;
+            const top = e.clientY - rect.top;
 
-        const type = e.dataTransfer.getData("component-type");
-        if (!type) return;
 
-        const rect = container.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-            const { actions, query } = editorRef.current;
-            const componentMap = {
-                Arrow,
-                Button,
-                Text,
-                ImageUpload,
-                Card,
-                ResizableRectWrapper,
-                Container,
-            };
-
-            const Component = componentMap[type];
-            if (!Component) return;
-
-            const nodeTree = query.parseReactElement(
-                <Component x={x} y={y} />
-            ).toNodeTree();
-
-            actions.addNodeTree(nodeTree, "ROOT");
-        };
+            //Viene fissata la posizione assoluta per free-canvas
+            const isFreeCanvas = layout === "free";
+            if (isFreeCanvas) {
+                updateNodePosition(nodeId, top, left, false);
+            }
+        }
     };
 
     const containerRef = useRef(null);
-    const editorRef = useRef(null);
+
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const resizeObserver = new ResizeObserver(() => {
+            const newWidth = container.scrollWidth; // Usa scrollWidth per ottenere la larghezza effettiva del contenuto
+            const newHeight = container.scrollHeight; // Usa scrollHeight per ottenere l'altezza effettiva del contenuto
+
+            // Solo aggiornamenti se le dimensioni sono effettivamente cambiate
+            if (newWidth !== width) {
+                setWidth(newWidth);
+            }
+            if (newHeight !== height) {
+                setHeight(newHeight);
+            }
+        });
+
+        resizeObserver.observe(container);
+
+        // Pulizia dell'observer quando il componente viene smontato
+        return () => {
+            resizeObserver.disconnect();
+        };
+    }, [width, height]); // Dipende da width e height per evitare loop infiniti
+
 
     useEffect(() => {
         const container = containerRef.current;
@@ -169,7 +199,7 @@ export default function App() {
                 default:
                     container.style.removeProperty("display");
                     container.childNodes.forEach((el) => {
-                        el.style.setProperty("position", "absolute");
+                        el.style.setProperty("position", "relative");
                     });
                     container.classList.add("free-canvas");
                     break;
@@ -179,7 +209,7 @@ export default function App() {
 
     return (
         <div style={{ display: "flex" }}>
-            <Editor ref={editorRef} resolver={{ Card, Button, Text, Container, CardTop, CardBottom, ImageUpload, ResizableRect, ResizableRectWrapper, Arrow, DraggableItem }}>
+            <Editor resolver={{ Card, Button, Text, Container, CardTop, CardBottom, ImageUpload, ResizableRect, ResizableRectWrapper, Arrow, DraggableItem }}>
                 <Grid className="home-grid" container spacing={3} margin={0.5}>
                     <Grid className="side-grid" item xs>
                         <h2 className="custom-typography" align="center">Page Editor</h2>
@@ -197,7 +227,7 @@ export default function App() {
                     </Grid>
                     <Grid item xs={2} mr={5}>
                         <Paper className="custom-paper">
-                            <Toolbox layout={layout}/> {/*Per rendering condizionale*/}
+                            <Toolbox layout={layout} changeLayout={changeLayout} restorePreviousLayout={restorePreviousLayout}/> {/*Per rendering condizionale*/}
                             <Settings />
                         </Paper>
                     </Grid>

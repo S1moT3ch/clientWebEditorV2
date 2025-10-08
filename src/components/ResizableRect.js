@@ -37,7 +37,7 @@ export const ResizableRect = ({ width, height, backgroundColor, borderRadius, bo
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                position: "relative"
+
             }}
         >
             <div

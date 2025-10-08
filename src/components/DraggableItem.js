@@ -1,16 +1,18 @@
-import React from "react"
-import { useNode } from "@craftjs/core";
+import React, { useEffect, useRef } from "react";
 
-export  const DraggableItem =({ children }) => {
-    const { connectors: { drag} } = useNode();
+export const DraggableItem = ({ id, initialPosition, children }) => {
+    const ref = useRef();
+
+    useEffect(() => {
+        if (ref.current && initialPosition) {
+            ref.current.style.position = "absolute";
+            ref.current.style.left = `${initialPosition.x}px`;
+            ref.current.style.top = `${initialPosition.y}px`;
+        }
+    }, [initialPosition]);
 
     return (
-        <div
-            ref={drag}
-            style={{
-                position: 'absolute',
-                cursor: "move"
-            }}>
+        <div id={id} ref={ref} style={{ position: "absolute" }}>
             {children}
         </div>
     );

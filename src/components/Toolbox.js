@@ -9,7 +9,17 @@ import {
     Typography
 } from "@mui/material";
 
+//import icone
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import WidgetsIcon from "@mui/icons-material/Widgets";
+import SmartButtonIcon from "@mui/icons-material/SmartButton";
+import TextFieldsIcon from "@mui/icons-material/TextFields";
+import CropSquareIcon from "@mui/icons-material/CropSquare";
+import ImageIcon from "@mui/icons-material/Image";
+import ViewAgendaIcon from "@mui/icons-material/ViewAgenda";
+import ViewDay from "@mui/icons-material/ViewDay";
+import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
+
 import { Element, useEditor } from "@craftjs/core";
 import { ImageUpload } from "./ImageUpload";
 import { Button } from "./Button";
@@ -46,10 +56,19 @@ export const Toolbox = ({ layout }) => {
 
     const isFreeCanvas = layout === "free"; //Logica per verificare la modalità del layout
 
-    // Se non selezionato un nodo, chiudi automaticamente la tendina, altrimenti apri la tendina
+    const handleDragStart = (e, componentType) => {
+        e.dataTransfer.setData("component", componentType);
+    };
+
+    // Se è selezionato un nodo (tranne il CardTop ed il CardBottom), chiudi la tendina, altrimeti aprila
     useEffect(() => {
-        if (selected?.name) {
+        if (selected) {
             setExpanded(false);
+            if (selected.name === "CardTop") {
+                setExpanded(true);
+            } else if (selected.name === "CardBottom") {
+                setExpanded(true);
+            }
         } else {
             setExpanded(true);
         }
@@ -67,12 +86,12 @@ export const Toolbox = ({ layout }) => {
         <Box className="right-panel">
             {/*Menù a tendina per il toolbox*/}
             <Accordion
-                sx={{ borderRadius: "20px", overflow: "hidden"}}
+                sx={{ borderRadius: "20px", overflow: "hidden", width: "15rem"}}
                 expanded={expanded}
                 onChange={handleAccordionChange}
             >
                 <AccordionSummary
-                    className="right-panel"
+                    className="toolbox-summary"
                     expandIcon={<ExpandMoreIcon sx={{ color: "#ffffff" }} />}
                     aria-controls="toolbox-content"
                     id="toolbox-header"
@@ -87,95 +106,123 @@ export const Toolbox = ({ layout }) => {
                         }
                     }}
                 >
+                    <WidgetsIcon sx={{ mr: 1}} />
                     <Typography variant="h6">Components</Typography>
                 </AccordionSummary>
-                <AccordionDetails className="right-panel">
+                <AccordionDetails>
                     <Grid container direction="column" alignItems="center" rowSpacing={2} mr={1}>
+
                         <h2 className="custom-typography">Drag to add</h2>
 
-                        <Grid container direction="column" item>
-                            <MaterialButton
-                                className="tool-btn"
-                                ref={(ref) => connectors.create(ref, <Button />)}
-                                variant="contained"
-                            >
-                                Button
-                            </MaterialButton>
-                        </Grid>
-
-                        <Grid container direction="column" item>
-                            <MaterialButton
-                                className="tool-btn"
-                                ref={(ref) => connectors.create(ref, <Text />)}
-                                variant="contained"
-                            >
-                                Text
-                            </MaterialButton>
-                        </Grid>
-
-                        <Grid container direction="column" item>
-                            <MaterialButton
-                                className="tool-btn"
-                                ref={(ref) =>
-                                    connectors.create(
-                                        ref,
-                                        <Element is={Container} canvas padding={20}>
-                                            <Text text="" />
-                                        </Element>
-                                    )
-                                }
-                                variant="contained"
-                            >
-                                Container
-                            </MaterialButton>
-                        </Grid>
-
-                        <Grid container direction="column" item>
-                            <MaterialButton
-                                className="tool-btn"
-                                ref={(ref) => connectors.create(ref, <Card />)}
-                                variant="contained"
-                            >
-                                Card
-                            </MaterialButton>
-                        </Grid>
-
-                        <Grid container direction="column" item>
-                            <MaterialButton
-                                className="tool-btn"
-                                ref={(ref) => connectors.create(ref, <ImageUpload />)}
-                                variant="contained"
-                            >
-                                Image
-                            </MaterialButton>
-                        </Grid>
-
-                        {/* Componenti visibili solo in modalità free-canvas */}
-                        {isFreeCanvas && (
-                            <>
+                        {/*Layout a griglia per il toolbox*/}
+                        <Grid container className="toolbox-grid" spacing={2} justifyContent="center">
+                            <Grid container direction="column" item>
                                 <MaterialButton
                                     className="tool-btn"
-                                    ref={(ref) => connectors.create(ref, <ResizableRectWrapper ><ResizableRect/></ResizableRectWrapper>)}
-                                    onDragStart={(e) =>
-                                        e.dataTransfer.setData("component-type", "ResizableRectWrapper")
+                                    ref={(ref) => connectors.create(ref, <Button />)}
+                                    variant="contained"
+                                >
+                                    <div className="tool-btn-content">
+                                        <SmartButtonIcon />
+                                        Button
+                                    </div>
+                                </MaterialButton>
+                            </Grid>
+
+                            <Grid container direction="column" item>
+                                <MaterialButton
+                                    className="tool-btn"
+                                    ref={(ref) => connectors.create(ref, <Text />)}
+                                    variant="contained"
+                                >
+                                    <div className="tool-btn-content">
+                                        <TextFieldsIcon />
+                                        Text
+                                    </div>
+                                </MaterialButton>
+                            </Grid>
+
+                            <Grid container direction="column" item>
+                                <MaterialButton
+                                    className="tool-btn"
+                                    ref={(ref) =>
+                                        connectors.create(
+                                            ref,
+                                            <Element is={Container} canvas padding={20}>
+                                                <Text text="" />
+                                            </Element>
+                                        )
                                     }
                                     variant="contained"
                                 >
-                                    Rectangle
+                                    <div className="tool-btn-content">
+                                        <ViewAgendaIcon />
+                                        Container
+                                    </div>
                                 </MaterialButton>
+                            </Grid>
+
+                            <Grid container direction="column" item>
+                                <MaterialButton
+                                    className="tool-btn"
+                                    ref={(ref) => connectors.create(ref, <Card />)}
+                                    variant="contained"
+                                >
+                                    <div className="tool-btn-content">
+                                        <ViewDay />
+                                        Card
+                                    </div>
+                                </MaterialButton>
+                            </Grid>
+
+                            <Grid container direction="column" item>
+                                <MaterialButton
+                                    className="tool-btn"
+                                    ref={(ref) => connectors.create(ref, <ImageUpload />)}
+                                    variant="contained"
+                                >
+                                    <div className="tool-btn-content">
+                                        <ImageIcon />
+                                        Image
+                                    </div>
+                                </MaterialButton>
+                            </Grid>
+
+                            {/* Componenti visibili solo in modalità free-canvas */}
+                            {isFreeCanvas && (
+                                <>
+                                    <Grid container direction="column" item>
+                                        <MaterialButton
+                                            className="tool-btn"
+                                            ref={(ref) => connectors.create(ref, <ResizableRect><Text /></ResizableRect>)}
+                                            onDragStart={(e) =>
+                                                e.dataTransfer.setData("component-type", "ResizableRectWrapper")
+                                            }
+                                            variant="contained"
+                                        >
+                                            <div className="tool-btn-content">
+                                                <CropSquareIcon />
+                                                Rectangle
+                                            </div>
+                                        </MaterialButton>
+                                    </Grid>
 
 
-                                <Grid container direction="column" item>
-                                    <MaterialButton
-                                        className="tool-btn"
-                                        ref={(ref) => connectors.create(ref, <Arrow />)}
-                                        variant="contained"
-                                    >
-                                        Arrow
-                                    </MaterialButton>
-                                </Grid>
-                            </>
-                        )}
+                                    <Grid container direction="column" item>
+                                        <MaterialButton
+                                            className="tool-btn"
+                                            ref={(ref) => connectors.create(ref, <Arrow />)}
+                                            variant="contained"
+                                        >
+                                            <div className="tool-btn-content">
+                                                <ArrowRightAltIcon />
+                                                Arrow
+                                            </div>
+                                        </MaterialButton>
+                                    </Grid>
+                                </>
+                            )}
+                        </Grid>
                     </Grid>
                 </AccordionDetails>
             </Accordion>
