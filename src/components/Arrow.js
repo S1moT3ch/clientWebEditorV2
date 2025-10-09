@@ -35,6 +35,7 @@ export const Arrow = ({ color, strokeWidth, length, rotation, x, y, width = 100,
 
     return (
         <Rnd
+            data-type="Arrow"
             bounds="parent"
             size={{ width, height }}
             position={{ x, y }}

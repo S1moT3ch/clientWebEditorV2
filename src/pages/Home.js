@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Paper, Grid } from '@mui/material';
+import { Paper, Grid, Snackbar, Alert } from '@mui/material';
 import "../App.css";
 
 import { Toolbox } from '../components/Toolbox';
@@ -16,7 +16,6 @@ import "../App.css";
 
 import { Editor, Frame, Element} from "@craftjs/core";
 import {DraggableItem} from "../components/DraggableItem";
-import {ResizableRectWrapper} from "../components/ResizableRectWrapper";
 
 //editor avvolge tutta l'applicazione per fornire contesto ai componenti modificabili
 //definiti nella prop resolver
@@ -34,28 +33,10 @@ export default function App() {
     const [width, setWidth] = useState("fit-content");
     const [height, setHeight] = useState("fit-content");
 
-    //Funzione per salvare lo stato attuale del layout
-    const changeLayout = (newLayout) => {
-        setPrevLayout({
-            layout,
-            rows,
-            columns,
-            width,
-            height
-        });
-        setLayout(newLayout);
-    };
+    const [hasSpecialElements, setHasSpecialElements] = useState(false);
 
-    //Funzione per ripristinare un layout precedente
-    const restorePreviousLayout = () => {
-        if (prevLayout) {
-            setLayout(prevLayout.layout);
-            setRows(prevLayout.rows);
-            setColumns(prevLayout.columns);
-            setWidth(prevLayout.width);
-            setHeight(prevLayout.height);
-        }
-    };
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
 
     const updateNodePosition = (id, gridRow, gridColumn, isGrid) => {
         const node = document.getElementById(id);
@@ -70,6 +51,55 @@ export default function App() {
             node.style.left = `${gridColumn}px`;
         }
     };
+
+    //Funzione per gestire il passaggio tra un layout ed un altro in modo fluido
+    const repositionNodes = (newLayout) => {
+
+        if (hasSpecialElements) {
+            console.warn("Modifica layout bloccata: ResizableRect o Arrow presenti")
+            return;
+        }
+        const container = document.getElementById("ROOT");
+        if(!container) return;
+
+        const nodes = Array.from(container.children);
+        if(!nodes.length) return;
+
+        switch(newLayout) {
+            case "row":
+                nodes.forEach((node, i) => {
+                    node.style.position = "relative";
+                    node.style.top = "0px";
+                    node.style.left = "0px";
+                    node.style.marginLeft = "10px"
+                });
+                break;
+            case "column":
+                nodes.forEach((node, i) => {
+                    node.style.position = "relative";
+                    node.style.top = "0px";
+                    node.style.left = "0px";
+                    node.style.marginLeft = "10px"
+                });
+                break;
+            case "grid":
+                const cols = columns || 2
+                nodes.forEach((node, i) => {
+                    node.style.position = "relative";
+                    const row = Math.floor(i / cols) + 1;
+                    const col = Math.floor(i % cols) +1;
+                    node.style.gridRowStart = row;
+                    node.style.gridColumnStart = col;
+                });
+                break;
+            case "free":
+            default:
+                nodes.forEach((node) => {
+                    node.style.position = "relative"
+                });
+                break
+        }
+    }
 
     function getDraggedElementId(e) {
         const currentEl = e.target.id;
@@ -143,36 +173,19 @@ export default function App() {
 
 
     useEffect(() => {
-        const container = containerRef.current;
-        if (!container) return;
-
-        const resizeObserver = new ResizeObserver(() => {
-            const newWidth = container.scrollWidth; // Usa scrollWidth per ottenere la larghezza effettiva del contenuto
-            const newHeight = container.scrollHeight; // Usa scrollHeight per ottenere l'altezza effettiva del contenuto
-
-            // Solo aggiornamenti se le dimensioni sono effettivamente cambiate
-            if (newWidth !== width) {
-                setWidth(newWidth);
-            }
-            if (newHeight !== height) {
-                setHeight(newHeight);
-            }
-        });
-
-        resizeObserver.observe(container);
-
-        // Pulizia dell'observer quando il componente viene smontato
-        return () => {
-            resizeObserver.disconnect();
-        };
-    }, [width, height]); // Dipende da width e height per evitare loop infiniti
-
-
-    useEffect(() => {
         const container = document.getElementById("ROOT");
         container.style.width = `${width}px`;
         container.style.height = `${height}px`;
-        if (container) {
+
+        //Impedisce il cambio layout se ci sono rettangoli o frecce
+        const hasRect = container.querySelector("[data-type='ResizableRect']");
+        const hasArrow = container.querySelector("[data-type='Arrow']");
+        if (hasRect || hasArrow) {
+            setSnackbarMessage("Layout change not allowed: there are Rectangle or Arrow in the canvas");
+            setSnackbarOpen(true);
+            setLayout("free")
+            return;
+        } else if (container) {
             switch (layout) {
                 case "grid":
                     container.style.setProperty("display", "grid");
@@ -204,15 +217,20 @@ export default function App() {
                     container.classList.add("free-canvas");
                     break;
             }
+
+            //Passaggio tra layout in modo fluido
+            repositionNodes(layout);
         }
+
+
     }, [layout, rows, columns, width, height]);
 
     return (
         <div style={{ display: "flex" }}>
-            <Editor resolver={{ Card, Button, Text, Container, CardTop, CardBottom, ImageUpload, ResizableRect, ResizableRectWrapper, Arrow, DraggableItem }}>
+            <Editor resolver={{ Card, Button, Text, Container, CardTop, CardBottom, ImageUpload, ResizableRect, Arrow, DraggableItem }}>
                 <Grid className="home-grid" container spacing={3} margin={0.5}>
                     <Grid className="side-grid" item xs>
-                        <h2 className="custom-typography" align="center">Page Editor</h2>
+                        <h2 className="custom-typography" align="center">PageCraft Editor</h2>
                         <Topbar {...{ layout, setLayout, rows, setRows, columns, setColumns, width, setWidth, height, setHeight }} />
                         <div onDragStart={getDraggedElementId} onDragOver={(e) => e.preventDefault()} onDrop={handleDrop} onDragEnd={(e) => e.preventDefault()}>
                             <Frame>
@@ -227,12 +245,25 @@ export default function App() {
                     </Grid>
                     <Grid item xs={2} mr={5}>
                         <Paper className="custom-paper">
-                            <Toolbox layout={layout} changeLayout={changeLayout} restorePreviousLayout={restorePreviousLayout}/> {/*Per rendering condizionale*/}
+                            <Toolbox layout={layout} /> {/*Per rendering condizionale*/}
                             <Settings />
                         </Paper>
                     </Grid>
                 </Grid>
             </Editor>
+
+            {/*Snackbar per notifiche*/}
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={3000}
+                onClose={() => setSnackbarOpen(false)}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+                <Alert onClose={() => setSnackbarOpen(false)} severity="warning" sx={{ width: "100%" }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+
         </div>
     );
 }

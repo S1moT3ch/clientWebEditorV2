@@ -36,6 +36,22 @@ export const Text = ({ text, fontSize, color, editable, fontFamily, fontWeight }
         updateSize()
     }, [text, fontSize, fontWeight, fontFamily]);
 
+    //Listener globale alla tastiera per gestire le shortcut
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.ctrlKey && e.key.toLowerCase() === "e") {
+                e.preventDefault();
+                setProp(props => props.editable = !props.editable);
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [setProp]);
+
     // Funzione per gestire l'editabilità del componente
     useEffect(() => {
         // Se l'editabilità cambia, possiamo fare qualcosa in più se necessario

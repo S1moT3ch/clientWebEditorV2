@@ -29,7 +29,6 @@ import { Card } from "./Card";
 import { ResizableRect } from "./ResizableRect";
 import { Arrow } from "./Arrow";
 import "../App.css";
-import {ResizableRectWrapper} from "./ResizableRectWrapper";
 
 export const Toolbox = ({ layout }) => {
     const { connectors, actions, selected } = useEditor((state, query) => {
@@ -56,9 +55,6 @@ export const Toolbox = ({ layout }) => {
 
     const isFreeCanvas = layout === "free"; //Logica per verificare la modalità del layout
 
-    const handleDragStart = (e, componentType) => {
-        e.dataTransfer.setData("component", componentType);
-    };
 
     // Se è selezionato un nodo (tranne il CardTop ed il CardBottom), chiudi la tendina, altrimeti aprila
     useEffect(() => {
@@ -195,9 +191,6 @@ export const Toolbox = ({ layout }) => {
                                         <MaterialButton
                                             className="tool-btn"
                                             ref={(ref) => connectors.create(ref, <ResizableRect><Text /></ResizableRect>)}
-                                            onDragStart={(e) =>
-                                                e.dataTransfer.setData("component-type", "ResizableRectWrapper")
-                                            }
                                             variant="contained"
                                         >
                                             <div className="tool-btn-content">

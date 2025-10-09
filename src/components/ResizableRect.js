@@ -14,6 +14,7 @@ export const ResizableRect = ({ width, height, backgroundColor, borderRadius, bo
     return (
         //Uso di React-rnd
         <Rnd
+            data-type="ResizableRect"
             size={{ width, height }}
             position={{ x, y }}
             onResizeStop={(e, direction, ref, delta, position) => {

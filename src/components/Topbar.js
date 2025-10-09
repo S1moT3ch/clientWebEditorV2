@@ -11,14 +11,14 @@ import "../App.css";
 import {useEditor} from "@craftjs/core";
 import {UndoRedo} from "./UndoRedo";
 
-export const Topbar = ({ layout, setLayout, changeLayout, restorePreviousLayout, rows, setRows, columns, setColumns, width, setWidth, height, setHeight }) => {
+export const Topbar = ({ layout, setLayout, rows, setRows, columns, setColumns, width, setWidth, height, setHeight }) => {
     const { query, actions } = useEditor();
 
     const [dropdown, setDropdown] = useState(null);
     const [snackbarMessage, setSnackbarMessage] = useState();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [stateToLoad, setStateToLoad] = useState("");
-    const [loadMode, setLoadMode] = useState("jsonZip"); //scelta del file da caricare: html, zip o json
+    const [loadMode, setLoadMode] = useState("zipJson"); //scelta del file da caricare: html, zip o json
 
     //Listener globale alla tastiera per gestire le shortcut
     useEffect(() => {
@@ -43,19 +43,25 @@ export const Topbar = ({ layout, setLayout, changeLayout, restorePreviousLayout,
         setDropdown(null);
     };
 
-    const handleLayoutChange = (newLayout) => {
-        changeLayout(newLayout);
-        setDropdown(null);
-    };
-    const handleLayoutRestore = (prevLayout) => {
-        restorePreviousLayout(prevLayout);
-        setDropdown(null);
-    };
 
     //Funzione per il salvataggio di HTML e JSON in una cartella .zip
     const saveLayout = async () => {
         try{
-            const json = query.serialize();
+            const serialized = query.serialize();
+
+            //Aggiunta dei dati relativi al layout
+            const extendedData = {
+                craftData: JSON.parse(serialized),
+                layoutInfo: {
+                    layout,
+                    rows,
+                    columns,
+                    width,
+                    height
+                }
+            };
+
+            const json = JSON.stringify(extendedData);
 
             const rootElement = document.getElementById("ROOT");
             if (!rootElement) {
@@ -114,7 +120,7 @@ export const Topbar = ({ layout, setLayout, changeLayout, restorePreviousLayout,
             rootElement.innerHTML = htmlContent;
 
             setStateToLoad("");
-            setLoadMode("zipJson");
+            setLoadMode("html");
             setSnackbarMessage("HTML loaded successfully!");
         } catch (error) {
             console.error(error);
@@ -145,9 +151,17 @@ export const Topbar = ({ layout, setLayout, changeLayout, restorePreviousLayout,
                 const jsonContent = await zip.file(jsonFileName).async("string");
                 const content = JSON.parse(jsonContent);
 
-                //deserializza lo stato di Craft.js
-                actions.deserialize(content);
-                await waitForImagesToLoad();
+                //deserializza lo stato di Craft.js e le info di layout. Poi ripristina lo stato del canvas caricato
+                actions.deserialize(JSON.stringify(content.craftData)); // Ripristina Craft.js
+                setLayout(content.layoutInfo.layout);
+                setRows(content.layoutInfo.rows);
+                setColumns(content.layoutInfo.columns);
+                setWidth(content.layoutInfo.width);
+                setHeight(content.layoutInfo.height);
+
+                document.getElementById("ROOT").style.width = `${content.layoutInfo.width}px`;
+                document.getElementById("ROOT").style.height = `${content.layoutInfo.height}px`;
+
                 setLoadMode("zipJson");
                 setSnackbarMessage("Layout successfully loaded from ZIP!");
                 setDialogOpen(false);
@@ -163,11 +177,20 @@ export const Topbar = ({ layout, setLayout, changeLayout, restorePreviousLayout,
             reader.onload = async (event) => {
                 try {
                     const content = JSON.parse(event.target.result);
-                    //deserializza lo stato di Craft.js
-                    actions.deserialize(content);
-                    await waitForImagesToLoad();
+
+                    //deserializza lo stato di Craft.js e le info di layout. Poi ripristina lo stato del canvas caricato
+                    actions.deserialize(JSON.stringify(content.craftData)); // Ripristina Craft.js
+                    setLayout(content.layoutInfo.layout);
+                    setRows(content.layoutInfo.rows);
+                    setColumns(content.layoutInfo.columns);
+                    setWidth(content.layoutInfo.width);
+                    setHeight(content.layoutInfo.height);
+
+                    document.getElementById("ROOT").style.width = `${content.layoutInfo.width}px`;
+                    document.getElementById("ROOT").style.height = `${content.layoutInfo.height}px`;
+
                     setLoadMode("zipJson");
-                    setSnackbarMessage("Layout successfully loaded from JSON!");
+                    setSnackbarMessage("Layout successfully loaded from ZIP!");
                     setDialogOpen(false);
 
                 } catch (error) {
@@ -278,14 +301,10 @@ export const Topbar = ({ layout, setLayout, changeLayout, restorePreviousLayout,
                 open={Boolean(dropdown)}
                 onClose={handleMenuClose}
             >
-                <MenuItem onClick={() => changeLayout("row")}>Horizontal</MenuItem>
-                <MenuItem onClick={() => handleLayoutChange("column")}>Vertical</MenuItem>
-                <MenuItem onClick={() => handleLayoutChange("grid")}>Grid Display</MenuItem>
-                <MenuItem onClick={() => handleLayoutChange("free")}>Free Canvas</MenuItem>
-                <MenuItem onClick={() => restorePreviousLayout("row")}>Horizontal</MenuItem>
-                <MenuItem onClick={() => handleLayoutRestore("column")}>Vertical</MenuItem>
-                <MenuItem onClick={() => handleLayoutRestore("grid")}>Grid Display</MenuItem>
-                <MenuItem onClick={() => handleLayoutRestore("free")}>Free Canvas</MenuItem>
+                <MenuItem onClick={() => setLayout("row")}>Horizontal</MenuItem>
+                <MenuItem onClick={() => setLayout("column")}>Vertical</MenuItem>
+                <MenuItem onClick={() => setLayout("grid")}>Grid Display</MenuItem>
+                <MenuItem onClick={() => setLayout("free")}>Free Canvas</MenuItem>
             </Menu>
 
             {/*Bottoni per effettuare undo/redo*/}
