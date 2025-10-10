@@ -107,7 +107,7 @@ ResizableRect.craft = {
     props: {
         width: 200,
         height: 100,
-        backgroundColor: "#ccc",
+        backgroundColor: "#ffe181",
         borderRadius: 0,
         borderWidth: 1,
         borderColor: "#000",

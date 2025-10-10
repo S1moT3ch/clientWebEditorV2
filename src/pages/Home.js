@@ -225,25 +225,47 @@ export default function App() {
 
     }, [layout, rows, columns, width, height]);
 
+    //UseEffect con un eventListener per notificare agli utenti al refresh o alla chiusura della pagina
+    //la perdina delle modifiche non salvate
+    useEffect(() => {
+        const handleBeforeUnload = (event) => {
+            const message = "Warning: if you refresh or close this page, you will lose all the unsaved changes";
+
+            event.preventDefault();
+            alert(message);
+            return message;
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, [])
+
     return (
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex"}}>
             <Editor resolver={{ Card, Button, Text, Container, CardTop, CardBottom, ImageUpload, ResizableRect, Arrow, DraggableItem }}>
                 <Grid className="home-grid" container spacing={3} margin={0.5}>
                     <Grid className="side-grid" item xs>
-                        <h2 className="custom-typography" align="center">PageCraft Editor</h2>
+                        <Grid display="flex" justifyContent="space-between">
+                            <img src="/LogoPC_full.png" alt="Logo PageCraft" style={{ width: "10vw", height: "auto" }}/>
+                            <h2 className="custom-typography" align="center">WebEditor</h2>
+                        </Grid>
+
                         <Topbar {...{ layout, setLayout, rows, setRows, columns, setColumns, width, setWidth, height, setHeight }} />
                         <div onDragStart={getDraggedElementId} onDragOver={(e) => e.preventDefault()} onDrop={handleDrop} onDragEnd={(e) => e.preventDefault()}>
                             <Frame>
                                 <Element is={Container} padding={10} canvas ref={containerRef}>
                                     <Card />
                                     <Button size="medium" variant="contained">Ciao</Button>
-                                    <Text size="small" text="Hi world!" />
+                                    <Text size="small" text="Hi!" />
                                     <Text size="small" text="It's me again!" />
                                 </Element>
                             </Frame>
                         </div>
                     </Grid>
-                    <Grid item xs={2} mr={5}>
+                    <Grid item xs={2} mr={8}>
                         <Paper className="custom-paper">
                             <Toolbox layout={layout} /> {/*Per rendering condizionale*/}
                             <Settings />

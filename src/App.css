@@ -157,6 +157,9 @@
     width: 300px;
     top: 0;
     background-color: #e9faed !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .base-btn {

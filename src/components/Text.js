@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, {useEffect, useState, useRef, useLayoutEffect} from "react";
 import { useNode } from "@craftjs/core";
 import ContentEditable from "react-contenteditable";
 import {FormControl, FormControlLabel, FormLabel, MenuItem, Select, Slider, Switch} from "@mui/material";
@@ -14,6 +14,7 @@ export const Text = ({ text, fontSize, color, editable, fontFamily, fontWeight }
     }));
 
     const ref = useRef(null);
+    const contentEditableRef = useRef(null);
     const [size, setSize] = useState({ width:"auto", height:"auto" });
 
     //Funzione per aggionare la dimensione della casella di testo
@@ -32,8 +33,8 @@ export const Text = ({ text, fontSize, color, editable, fontFamily, fontWeight }
     };
 
 
-    useEffect(() => {
-        updateSize()
+    useLayoutEffect(() => {
+        updateSize();
     }, [text, fontSize, fontWeight, fontFamily]);
 
     //Listener globale alla tastiera per gestire le shortcut
@@ -41,20 +42,35 @@ export const Text = ({ text, fontSize, color, editable, fontFamily, fontWeight }
         const handleKeyDown = (e) => {
             if (e.ctrlKey && e.key.toLowerCase() === "e") {
                 e.preventDefault();
-                setProp(props => props.editable = !props.editable);
+                if (isSelected){
+                    setProp(props => props.editable = !props.editable);
+                }
             }
         };
+
+        if (!isSelected){
+            setProp(props => props.editable = false);
+        }
 
         window.addEventListener("keydown", handleKeyDown);
 
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, [setProp]);
+    }, [setProp, isSelected]);
 
-    // Funzione per gestire l'editabilità del componente
+    // Funzione per mettere il focus sul testo e mostrare il cursore se si è in modalità modifica
     useEffect(() => {
-        // Se l'editabilità cambia, possiamo fare qualcosa in più se necessario
+        if (editable && contentEditableRef.current) {
+            contentEditableRef.current.focus();
+
+            const range = document.createRange();
+            range.selectNodeContents(contentEditableRef.current);
+            range.collapse(false);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
     }, [editable]);
 
     return (
@@ -72,6 +88,7 @@ export const Text = ({ text, fontSize, color, editable, fontFamily, fontWeight }
                  justifyContent: "center",
             }}>
             <ContentEditable
+                innerRef={contentEditableRef}
                 html={text}
                 onInput={(e) => {
                     updateSize(); // Aggiorna dimensioni mentre viene scritto un nuovo testo
@@ -90,9 +107,11 @@ export const Text = ({ text, fontSize, color, editable, fontFamily, fontWeight }
                 style={{
                     fontSize: `${fontSize}px`,
                     color,
-                    whiteSpace: "nowrap", //evita che il testo vada a capo
+                    whiteSpace: "pre-wrap",
                     fontFamily: fontFamily || "Poppins",
-                    fontWeight: fontWeight || "normal"
+                    fontWeight: fontWeight || "normal",
+                    cursor: editable ? "text" : "default",
+                    outline: editable ? "1px dashed gray" : "none",
                 }}
                 disabled={!editable} // Disabilita ContentEditable se non è in modalità editabile
             />

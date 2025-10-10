@@ -77,6 +77,22 @@ export const Toolbox = ({ layout }) => {
         setExpanded(newExpanded);
     };
 
+    //Listener globale alla tastiera per gestire le shortcut
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.ctrlKey && e.key.toLowerCase() === "c") {
+                e.preventDefault();
+                setExpanded(prev => !prev);
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
+
 
     return (
         <Box className="right-panel">
