@@ -260,7 +260,7 @@ export default function App() {
                                     <Card />
                                     <Button size="medium" variant="contained">Ciao</Button>
                                     <Text size="small" text="Hi!" />
-                                    <Text size="small" text="It's me again!" />
+                                    <Text size="small" text="It's me!" />
                                 </Element>
                             </Frame>
                         </div>
