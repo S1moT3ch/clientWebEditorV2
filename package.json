@@ -9,6 +9,7 @@
     "@mui/icons-material": "^6.5.0",
     "@mui/material": "^6.4.4",
     "@mui/system": "^6.4.3",
+    "copy-to-clipboard": "^3.3.3",
     "cra-template": "1.2.0",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
