@@ -42,16 +42,30 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
         try{
             const serialized = query.serialize();
 
-            //Aggiunta dei dati relativi al layout
+            // Dati layout
+            const layoutInfo = {
+                layout,
+                rows,
+                columns,
+                width,
+                height,
+            };
+
+            //Se si è in modalità "free", vengono salvate le coordinate di ogni nodo
+            if (layout === "free") {
+                const rootElement = document.getElementById("ROOT");
+                const nodePositions = Array.from(rootElement.children).map((node) => ({
+                    id: node.id,
+                    top: node.style.top || "0px",
+                    left: node.style.left || "0px",
+                }));
+
+                layoutInfo.nodePositions = nodePositions;
+            }
+
             const extendedData = {
                 craftData: JSON.parse(serialized),
-                layoutInfo: {
-                    layout,
-                    rows,
-                    columns,
-                    width,
-                    height
-                }
+                layoutInfo,
             };
 
             const json = JSON.stringify(extendedData);
@@ -144,7 +158,7 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
                 const jsonContent = await zip.file(jsonFileName).async("string");
                 const content = JSON.parse(jsonContent);
 
-                //deserializza lo stato di Craft.js e le info di layout. Poi ripristina lo stato del canvas caricato
+                //deserializza lo stato di Craft.js e le info di layout. Poi ripristina lo stato del canvas caricato, posizionando gli elementi, se in free-layout, nella posizione in cui sono stati salvati
                 actions.deserialize(JSON.stringify(content.craftData)); // Ripristina Craft.js
                 setLayout(content.layoutInfo.layout);
                 setRows(content.layoutInfo.rows);
@@ -154,6 +168,20 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
 
                 document.getElementById("ROOT").style.width = `${content.layoutInfo.width}px`;
                 document.getElementById("ROOT").style.height = `${content.layoutInfo.height}px`;
+
+                if (content.layoutInfo.layout === "free" && content.layoutInfo.nodePositions) {
+                    await new Promise((resolve) => setTimeout(resolve, 500));
+
+                    content.layoutInfo.nodePositions.forEach(({ id, top, left }) => {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            el.style.position = "absolute";
+                            el.style.top = top;
+                            el.style.left = left;
+                        }
+                    });
+                }
+
 
                 setLoadMode("zipJson");
                 setSnackbarMessage("Layout successfully loaded from ZIP!");
@@ -181,6 +209,20 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
 
                     document.getElementById("ROOT").style.width = `${content.layoutInfo.width}px`;
                     document.getElementById("ROOT").style.height = `${content.layoutInfo.height}px`;
+
+                    if (content.layoutInfo.layout === "free" && content.layoutInfo.nodePositions) {
+                        await new Promise((resolve) => setTimeout(resolve, 500)); // piccolo delay per sicurezza
+
+                        content.layoutInfo.nodePositions.forEach(({ id, top, left }) => {
+                            const el = document.getElementById(id);
+                            if (el) {
+                                el.style.position = "absolute";
+                                el.style.top = top;
+                                el.style.left = left;
+                            }
+                        });
+                    }
+
 
                     setLoadMode("zipJson");
                     setSnackbarMessage("Layout successfully loaded from ZIP!");
@@ -240,13 +282,13 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
 
             {/*Bottone per caricare HTML e JSON*/}
             <Button
-                    className="custom-typography"
-                    id="loadButton"
-                    style={{ fontWeight: "bold", fontSize: "17px", borderRadius:"20px", marginLeft:"10px"}}
-                    variant="outlined"
-                    onClick={()=> {
-                        setDialogOpen(true);
-                    }}>
+                className="custom-typography"
+                id="loadButton"
+                style={{ fontWeight: "bold", fontSize: "17px", borderRadius:"20px", marginLeft:"10px"}}
+                variant="outlined"
+                onClick={()=> {
+                    setDialogOpen(true);
+                }}>
                 Load
             </Button>
             <Dialog

@@ -181,9 +181,14 @@ export default function App() {
         const hasRect = container.querySelector("[data-type='ResizableRect']");
         const hasArrow = container.querySelector("[data-type='Arrow']");
         if (hasRect || hasArrow) {
+            setLayout("free")
             setSnackbarMessage("Layout change not allowed: there are Rectangle or Arrow in the canvas");
             setSnackbarOpen(true);
-            setLayout("free")
+            container.style.removeProperty("display");
+            container.childNodes.forEach((el) => {
+                el.style.setProperty("position", "relative");
+            });
+            container.classList.add("free-canvas");
             return;
         } else if (container) {
             switch (layout) {

@@ -13,9 +13,9 @@ export default function MobileWarning() {
             bgcolor="#f8f8f8"
         >
             <Typography variant="h4" color="error">
-                Questa pagina non può essere aperta da un dispositivo mobile.
+                This page cannot be opened on a mobile device
                 <br />
-                Per favore usa un computer desktop.
+                Please use a desktop computer
             </Typography>
         </Box>
     );

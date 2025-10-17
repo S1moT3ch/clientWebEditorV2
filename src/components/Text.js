@@ -84,8 +84,9 @@ export const Text = ({ text, fontSize, color, editable, fontFamily, fontWeight }
                  width: size.width,
                  height: size.height,
                  display: "flex",
-                 alignItems: "center",
-                 justifyContent: "center",
+                 alignItems: "flex-start",
+                 justifyContent: "flex-start",
+                 padding: "2px",
             }}>
             <ContentEditable
                 innerRef={contentEditableRef}
@@ -107,7 +108,7 @@ export const Text = ({ text, fontSize, color, editable, fontFamily, fontWeight }
                 style={{
                     fontSize: `${fontSize}px`,
                     color,
-                    whiteSpace: "pre-wrap",
+                    whiteSpace: "pre",
                     fontFamily: fontFamily || "Poppins",
                     fontWeight: fontWeight || "normal",
                     cursor: editable ? "text" : "default",
@@ -126,8 +127,8 @@ const TextSettings = () => {
     } = useNode((node) => ({
         fontSize: node.data.props.fontSize,
         fontWeight: node.data.props.fontWeight ?? "400",
-        editable: node.data.props.editable, // Otteniamo la proprietà editable dal nodo
-        fontFamily: node.data.props.fontFamily, // Otteniamo propietà fontFamily dal nodo
+        editable: node.data.props.editable, // Ottenimento la proprietà editable dal nodo
+        fontFamily: node.data.props.fontFamily, // Ottenimento propietà fontFamily dal nodo
     }));
 
     return (
