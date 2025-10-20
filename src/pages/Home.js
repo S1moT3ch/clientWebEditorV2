@@ -95,7 +95,7 @@ export default function App() {
             case "free":
             default:
                 nodes.forEach((node) => {
-                    node.style.position = "relative"
+                    node.style.position = "relative";
                 });
                 break
         }
