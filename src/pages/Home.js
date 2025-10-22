@@ -27,7 +27,6 @@ import {DraggableItem} from "../components/DraggableItem";
 
 export default function App() {
     const [layout, setLayout] = useState("column");
-    const [prevLayout, setPrevLayout] = useState(null);
     const [rows, setRows] = useState(2);
     const [columns, setColumns] = useState(2);
     const [width, setWidth] = useState("fit-content");
@@ -55,12 +54,16 @@ export default function App() {
     //Funzione per gestire il passaggio tra un layout ed un altro in modo fluido
     const repositionNodes = (newLayout) => {
 
-        if (hasSpecialElements) {
-            console.warn("Modifica layout bloccata: ResizableRect o Arrow presenti")
+        const container = document.getElementById("ROOT");
+        if (!container) return;
+
+        const hasRect = container.querySelector("[data-type='ResizableRect']");
+        const hasArrow = container.querySelector("[data-type='Arrow']");
+
+        if (hasRect || hasArrow) {
+            console.warn("Skipping repositionNodes: special elements present");
             return;
         }
-        const container = document.getElementById("ROOT");
-        if(!container) return;
 
         const nodes = Array.from(container.children);
         if(!nodes.length) return;
@@ -93,6 +96,12 @@ export default function App() {
                 });
                 break;
             case "free":
+                container.style.removeProperty("display");
+                container.childNodes.forEach((el) => {
+                    el.style.setProperty("position", "relative");
+                });
+                container.classList.add("free-canvas");
+                break;
             default:
                 nodes.forEach((node) => {
                     node.style.position = "relative";
@@ -181,7 +190,9 @@ export default function App() {
         const hasRect = container.querySelector("[data-type='ResizableRect']");
         const hasArrow = container.querySelector("[data-type='Arrow']");
         if (hasRect || hasArrow) {
-            setLayout("free")
+            if (layout !== "free") {
+                setLayout("free");
+            }
             setSnackbarMessage("Layout change not allowed: there are Rectangle or Arrow in the canvas");
             setSnackbarOpen(true);
             container.style.removeProperty("display");

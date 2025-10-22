@@ -168,6 +168,7 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
 
                 document.getElementById("ROOT").style.width = `${content.layoutInfo.width}px`;
                 document.getElementById("ROOT").style.height = `${content.layoutInfo.height}px`;
+                console.log(layout);
 
                 if (content.layoutInfo.layout === "free" && content.layoutInfo.nodePositions) {
                     await new Promise((resolve) => setTimeout(resolve, 500));

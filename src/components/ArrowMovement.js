@@ -80,7 +80,7 @@ export const ArrowMovement = ({
 
     return (
         <div
-            ref={(ref) => connect(ref)}
+            ref={ref}
             style={{
                 position: "absolute",
                 width,
@@ -114,7 +114,12 @@ export const ArrowMovement = ({
                             cursor: "ew-resize",
                             pointerEvents: "all"
                         }}
-                        onMouseDown={handleMouseDownResize}
+                        onMouseDown={(e) => {
+                            e.stopPropagation();
+                            setIsResizing(true);
+                            onResizeStart && onResizeStart();
+                            setStartPos({ x: e.clientX, y: e.clientY });
+                        }}
                     />
                 )}
 
@@ -133,7 +138,13 @@ export const ArrowMovement = ({
                             cursor: "grab",
                             pointerEvents: "all"
                         }}
-                        onMouseDown={handleMouseDownRotate}
+                        onMouseDown={(e) => {
+                            e.stopPropagation();
+                            setIsRotating(true);
+                            onRotateStart && onRotateStart();
+                            setStartPos({ x: e.clientX, y: e.clientY });
+                            setStartRotation(rotation);
+                        }}
                     />
                 )}
             </div>

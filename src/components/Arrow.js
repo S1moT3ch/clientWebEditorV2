@@ -18,6 +18,21 @@ export const Arrow = ({ color, strokeWidth, length, rotation, x, y, width = 100,
     const [isResizing, setIsResizing] = useState(false);
     const [isRotating, setIsRotating] = useState(false);
 
+    //Ref callback:collega condizionalmente il drag solo se non si sta ridimensionando/ruotando
+    const handleRef = (el) => {
+        ref.current = el;
+        if (!el) return;
+
+        if (isResizing || isRotating) {
+            connect(el);
+        } else {
+            connect(drag(el));
+        }
+    };
+
+    // Riapplicazione del drag quando cambia lo stato isResizing/isRotating
+
+
     //Funzione per gestire il drag and drop
     const handleDragEnd = (e) => {
         if (isResizing) return; //Blocca il drag se si sta effettuando il resize
@@ -64,9 +79,7 @@ export const Arrow = ({ color, strokeWidth, length, rotation, x, y, width = 100,
                     ref.current = el;
                     connect(el);
                 }}
-                //onDragEnd={handleDragEnd}
                 style={{
-                    //position: "absolute",
                     transform: `rotate(${rotation}deg)`,
                     left: x,
                     top: y,
@@ -103,12 +116,24 @@ export const Arrow = ({ color, strokeWidth, length, rotation, x, y, width = 100,
                             width={length}
                             height={50}
                             rotation={0}
-                            onResizeStart={() => setIsResizing(true)}
+                            onResizeStart={() => {
+                                setIsResizing(true);
+                                setOptions((options) => ({ ...options, enabled: false }));
+                            }}
                             onResize={({ width }) => setProp(props => (props.length = width))}
-                            onResizeStop={() => setIsResizing(false)}
-                            onRotateStart={() => setIsRotating(true)}
+                            onResizeStop={() => {
+                                setIsResizing(false);
+                                setOptions((options) => ({ ...options, enabled: true }));
+                            }}
+                            onRotateStart={() => {
+                                setIsRotating(true);
+                                setOptions((options) => ({ ...options, enabled: false }));
+                            }}
                             onRotate={(newRotation) => setProp(props => (props.rotation = newRotation))}
-                            onRotateStop={() => setIsRotating(false)}
+                            onRotateStop={() => {
+                                setIsRotating(false);
+                                setOptions((options) => ({ ...options, enabled: true }));
+                            }}
                         />
                     )}
                 </div>

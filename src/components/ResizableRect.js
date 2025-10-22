@@ -42,7 +42,7 @@ export const ResizableRect = ({ width, height, backgroundColor, borderRadius, bo
             }}
         >
             <div
-                ref={(ref) => connect(ref)} // Collegamento di solo un nodo DOM
+                ref={(ref) => connect(drag(ref))} // Collegamento di solo un nodo DOM
                 style={{ width: "100%",
                         height: "100%",
                         display: "flex",
