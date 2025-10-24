@@ -22,12 +22,14 @@ import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 
 import { Element, useEditor } from "@craftjs/core";
 import { ImageUpload } from "./ImageUpload";
-import { Button } from "./Button";
+import { CraftButton as Button } from "./Button";
 import { Text } from "./Text";
 import { Container } from "./Container";
 import { Card } from "./Card";
 import { ResizableRect } from "./ResizableRect";
+import { DraggableChild } from "./DraggableChild";
 import { Arrow } from "./Arrow";
+import { Photo } from "./Photo"
 import "../App.css";
 
 export const Toolbox = ({ layout }) => {
@@ -206,7 +208,7 @@ export const Toolbox = ({ layout }) => {
                                     <Grid container direction="column" item>
                                         <MaterialButton
                                             className="tool-btn"
-                                            ref={(ref) => connectors.create(ref, <ResizableRect><Text /></ResizableRect>)}
+                                            ref={(ref) => connectors.create(ref, <ResizableRect><DraggableChild><Text/></DraggableChild></ResizableRect>)}
                                             variant="contained"
                                         >
                                             <div className="tool-btn-content">
@@ -229,6 +231,18 @@ export const Toolbox = ({ layout }) => {
                                             </div>
                                         </MaterialButton>
                                     </Grid>
+
+                                    <Grid container direction="column" item>
+                                    <MaterialButton
+                                        className="tool-btn"
+                                        ref={(ref) => connectors.create(ref, <Photo />)}
+                                        variant="contained"
+                                    >
+                                        <div className="tool-btn-content">
+                                            Live Photo
+                                        </div>
+                                    </MaterialButton>
+                                </Grid>
                                 </>
                             )}
                         </Grid>

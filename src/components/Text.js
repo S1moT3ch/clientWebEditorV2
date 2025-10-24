@@ -1,8 +1,19 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { useNode } from "@craftjs/core";
 import ContentEditable from "react-contenteditable";
-import { FormControl, FormControlLabel, FormLabel, MenuItem, Select, Slider, Switch } from "@mui/material";
+import {
+    Button,
+    FormControl,
+    FormControlLabel,
+    FormLabel,
+    MenuItem,
+    Select,
+    Slider,
+    Switch,
+    TextField
+} from "@mui/material";
 import { HexColorPicker } from "react-colorful";
+import {Stack} from "@mui/system";
 
 // Helper per caricare dinamicamente i font Google
 const loadGoogleFont = (fontFamily) => {
@@ -16,7 +27,7 @@ const loadGoogleFont = (fontFamily) => {
     }
 };
 
-export const Text = ({ text, fontSize, color, editable, fontFamily, fontWeight }) => {
+export const Text = ({ text, fontSize, color, editable, fontFamily, fontWeight, zIndex }) => {
     const { connectors: { connect, drag }, id, actions: { setProp }, isSelected } = useNode((state) => ({
         isSelected: state.events.selected,
     }));
@@ -98,6 +109,7 @@ export const Text = ({ text, fontSize, color, editable, fontFamily, fontWeight }
                  alignItems: "flex-start",
                  justifyContent: "flex-start",
                  padding: "2px",
+                 zIndex: zIndex,
              }}>
             <ContentEditable
                 innerRef={contentEditableRef}
@@ -128,11 +140,12 @@ export const Text = ({ text, fontSize, color, editable, fontFamily, fontWeight }
 
 //Pannello settings
 const TextSettings = () => {
-    const { actions: { setProp }, fontSize, fontWeight, editable, fontFamily } = useNode((node) => ({
+    const { actions: { setProp }, fontSize, fontWeight, editable, fontFamily, zIndex } = useNode((node) => ({
         fontSize: node.data.props.fontSize,
         fontWeight: node.data.props.fontWeight ?? "400",
         editable: node.data.props.editable,
         fontFamily: node.data.props.fontFamily,
+        zIndex: node.data.props.zIndex,
     }));
 
     const [availableFonts, setAvailableFonts] = useState([]);
@@ -174,6 +187,8 @@ const TextSettings = () => {
                 <FormLabel className="custom-label">Font Color</FormLabel>
                 <HexColorPicker onChange={color => setProp(props => props.color = color)} />
             </FormControl>
+
+            {/* Form per cambiare font della scrittura */}
             <FormControl fullWidth margin="normal" component="fieldset">
                 <FormLabel className="custom-label">Font Family</FormLabel>
                 <Select value={fontFamily || "Poppins"} onChange={(e) => handleFontChange(e.target.value)}>
@@ -182,6 +197,8 @@ const TextSettings = () => {
                     ))}
                 </Select>
             </FormControl>
+
+            {/* Form per gestire font normale o grassetto */}
             <FormControl fullWidth margin="normal" component="fieldset">
                 <FormLabel className="custom-label">Font Weight</FormLabel>
                 <Select value={fontWeight} onChange={(e) => setProp(props => props.fontWeight = e.target.value)}>
@@ -189,6 +206,43 @@ const TextSettings = () => {
                     <MenuItem value="700">Bold</MenuItem>
                 </Select>
             </FormControl>
+
+            <FormControl size="small" component="fieldset">
+                {/* TextField per gestire il valore dello zIndex */}
+                <FormLabel className="custom-label">Livello</FormLabel>
+                <TextField
+                    type="number"
+                    size="small"
+                    value={zIndex || 1}
+                    onChange={(e) =>
+                        setProp((props) => (props.zIndex = parseInt(e.target.value, 10) || 0))
+                    }
+                >
+                </TextField>
+            </FormControl>
+
+            {/* Pulsanti rapidi per gestire lo zIndex */}
+            <Stack direction="row" spacing={1} justifyContent="space-between">
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() =>
+                        setProp((props) => (props.zIndex = Math.max((props.zIndex || 1) - 1, 0)))
+                    }
+                >
+                    Manda indietro
+                </Button>
+
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() =>
+                        setProp((props) => (props.zIndex = (props.zIndex || 1) + 1))
+                    }
+                >
+                    Porta avanti
+                </Button>
+            </Stack>
         </>
     );
 };
@@ -198,7 +252,7 @@ Text.craft = {
         text: "Default text",
         fontSize: 20,
         color: "#000",
-        editable: false,
+        editable: false, // La proprietà editabile di default è false
         fontFamily: "Poppins",
         fontWeight: "400"
     },

@@ -50,12 +50,23 @@
 
 
 .right-panel {
+    margin-top: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     padding: 20px;
-    width: 13rem;
+    width: 12rem;
+
+}
+
+.settings-panel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px;
+    width: 12rem;
 
 }
 
@@ -154,7 +165,7 @@
     position: fixed;
     overflow-y: scroll;
     height: 100vh;
-    width: 300px;
+    width: 20vw;
     top: 0;
     background-color: #e9faed !important;
     display: flex;
@@ -182,7 +193,7 @@
 .side-grid {
     overflow: hidden;
     flex-grow: 1;
-    max-width: calc(100vw - 300px);
+    max-width: 79vw !important;
 }
 
 

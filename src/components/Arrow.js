@@ -1,12 +1,13 @@
 import React, {useEffect, useRef, useState} from "react";
 import { useNode, useEditor } from "@craftjs/core";
 import { ArrowMovement} from "./ArrowMovement";
-import {FormControl, FormLabel, TextField} from "@mui/material";
+import {FormControl, FormLabel, TextField, Button} from "@mui/material";
 import {HexColorPicker} from "react-colorful";
-import {Rnd} from "react-rnd"; //componente di resize
+import {Rnd} from "react-rnd";
+import {Stack} from "@mui/system";
 
 //Componente freccia
-export const Arrow = ({ color, strokeWidth, length, rotation, x, y, width = 100, height = 50 }) => {
+export const Arrow = ({ color, strokeWidth, length, rotation, x, y, width = 100, height = 50, zIndex}) => {
     const { connectors: { connect, drag }, actions: {setProp}, isSelected } = useNode((state) => ({
         isSelected: state.events.selected,
     }));
@@ -72,6 +73,7 @@ export const Arrow = ({ color, strokeWidth, length, rotation, x, y, width = 100,
                 position: "absolute",
                 transform: `rotate(${rotation}deg)`,
                 transformOrigin: "center center",
+                zIndex: zIndex,
             }}
         >
             <div
@@ -156,6 +158,43 @@ const ArrowSettings = () => {
                     setProp(props => props.color = color)
                 }} />
             </FormControl>
+
+            <FormControl size="small" component="fieldset">
+                {/* TextField per gestire il valore dello zIndex*/}
+                <FormLabel className="custom-label">Livello</FormLabel>
+                <TextField
+                    type="number"
+                    size="small"
+                    value={props.zIndex}
+                    onChange={(e) =>
+                        setProp((props) => (props.zIndex = parseInt(e.target.value, 10) || 0))
+                    }
+                >
+                </TextField>
+            </FormControl>
+
+            {/* Pulsanti rapidi per gestire lo zIndex */}
+            <Stack direction="row" spacing={1} justifyContent="space-between">
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() =>
+                        setProp((props) => (props.zIndex = Math.max((props.zIndex || 1) - 1, 0)))
+                    }
+                >
+                    Manda indietro
+                </Button>
+
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() =>
+                        setProp((props) => (props.zIndex = (props.zIndex || 1) + 1))
+                    }
+                >
+                    Porta avanti
+                </Button>
+            </Stack>
         </div>
     );
 };
@@ -169,7 +208,8 @@ Arrow.craft = {
         x: 0,
         y: 0,
         width: 100,
-        height: 50
+        height: 50,
+        zIndex : 1
     },
     related: {
         settings: ArrowSettings

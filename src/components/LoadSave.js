@@ -52,15 +52,43 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
             };
 
             //Se si è in modalità "free", vengono salvate le coordinate di ogni nodo
-            if (layout === "free") {
-                const rootElement = document.getElementById("ROOT");
-                const nodePositions = Array.from(rootElement.children).map((node) => ({
-                    id: node.id,
-                    top: node.style.top || "0px",
-                    left: node.style.left || "0px",
-                }));
+            const rootElement = document.getElementById("ROOT");
+            const isFreeLayout =
+                layout === "free" ||
+                Array.from(rootElement.children).some((el) => {
+                    const pos = window.getComputedStyle(el).position;
+                    return pos === "absolute" || pos === "fixed";
+                });
+
+            if (isFreeLayout) {
+                const nodePositions = Array.from(rootElement.children).map((node) => {
+                    const computed = window.getComputedStyle(node);
+                    return {
+                        id: node.id,
+                        top: computed.top,
+                        left: computed.left,
+                    };
+                });
+
+                const nodeCraftPositions = Array.from(
+                    rootElement.querySelectorAll("[data-craft-node]")
+                )
+                    .filter((el) => el.getAttribute("data-craft-node") !== "ROOT")
+                    .map((el) => {
+                        const craftId = el.getAttribute("data-craft-node");
+                        const rect = el.getBoundingClientRect();
+                        const parentRect = rootElement.getBoundingClientRect();
+
+                        return {
+                            id: craftId,
+                            top: `${rect.top - parentRect.top}px`,
+                            left: `${rect.left - parentRect.left}px`,
+                        };
+                    });
 
                 layoutInfo.nodePositions = nodePositions;
+                layoutInfo.nodeCraftPositions = nodeCraftPositions;
+                layoutInfo.layout = "free";
             }
 
             const extendedData = {
@@ -70,7 +98,6 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
 
             const json = JSON.stringify(extendedData);
 
-            const rootElement = document.getElementById("ROOT");
             if (!rootElement) {
                 setSnackbarMessage("Error: ROOT container not found!")
                 return
@@ -102,6 +129,7 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
             //zippa la cartella
             const content = await zip.generateAsync({ type: "blob" });
             //salva il file .zip generato
+            console.log("Saving layout type:", layout);
             saveAs(content, `${folderName}.zip`);
 
             setSnackbarMessage("Zip archive saved and HTML copied to clipboard");
@@ -176,7 +204,16 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
                     content.layoutInfo.nodePositions.forEach(({ id, top, left }) => {
                         const el = document.getElementById(id);
                         if (el) {
-                            el.style.position = "absolute";
+                            el.style.position = "relative";
+                            el.style.top = top;
+                            el.style.left = left;
+                        }
+                    });
+
+                    content.layoutInfo.nodePositions.forEach(({ id, top, left }) => {
+                        const el = document.querySelector(`[data-craft-node="${id}"]`);
+                        if (el) {
+                            el.style.position = "relative";
                             el.style.top = top;
                             el.style.left = left;
                         }
@@ -217,7 +254,16 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
                         content.layoutInfo.nodePositions.forEach(({ id, top, left }) => {
                             const el = document.getElementById(id);
                             if (el) {
-                                el.style.position = "absolute";
+                                el.style.position = "relative";
+                                el.style.top = top;
+                                el.style.left = left;
+                            }
+                        });
+
+                        content.layoutInfo.nodePositions.forEach(({ id, top, left }) => {
+                            const el = document.querySelector(`[data-craft-node="${id}"]`);
+                            if (el) {
+                                el.style.position = "relative";
                                 el.style.top = top;
                                 el.style.left = left;
                             }

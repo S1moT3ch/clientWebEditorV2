@@ -1,16 +1,17 @@
 import React, {useEffect, useRef, useState} from "react";
-import {FormControl, Paper, Slider, FormLabel, FormControlLabel, Switch, Input, Button} from "@mui/material";
+import {FormControl, Paper, Slider, FormLabel, FormControlLabel, Switch, Input, Button, TextField} from "@mui/material";
 import Element from "@craftjs/core";
 import {useNode} from "@craftjs/core";
 import {HexColorPicker} from "react-colorful";
 import "../App.css"
+import {Stack} from "@mui/system";
 
 
 
 
 // componente container ( che contiene tutti gli altri) è sostanzialmente la tela , permette all utente di modificare colore dello sfondo e padding
 // padding indica lo spazio tra il bordo del container e il contenuto , mentre margin indica lo spazio tra il bordo del container e il suo contenitore 5px (top e bottom) e 0px (left e right)
-export const Container = ({background, padding = 0, margin = 1, width, height, children, backgroundColor}) => {
+export const Container = ({background, padding = 0, margin = 1, width, height, children, backgroundColor, zIndex}) => {
     const {connectors : {connect, drag}, id,
            actions: {setProp}, isSelected} = useNode((state) => ({
             isSelected : state.events.selected
@@ -46,6 +47,7 @@ export const Container = ({background, padding = 0, margin = 1, width, height, c
                     width: `${width}px`,
                     height: `${height}px`,
                     display: "flex",
+                    zIndex: zIndex,
         }}>
             {children}
         </Paper>
@@ -55,9 +57,10 @@ export const Container = ({background, padding = 0, margin = 1, width, height, c
 
 
 export const ContainerSettings = () => {
-    const { background, margin, padding, flexDirection, id, data, width, height, backgroundColor, actions: {setProp} } = useNode((node) => ({
+    const { background, margin, padding, flexDirection, id, data, width, height, backgroundColor, zIndex, actions: {setProp} } = useNode((node) => ({
         background: node.data.props.background,
         backgroundColor: node.data.props.backgroundColor,
+        zIndex: node.data.props.zIndex,
         width: node.data.props.width,
         height: node.data.props.height,
         padding: node.data.props.padding,
@@ -172,6 +175,42 @@ export const ContainerSettings = () => {
                 <Slider defaultValue={margin} onChange={(_, value) => setProp(props => props.margin = value)} />
             </FormControl>
             {id !== "ROOT" && data.type.name !== "Card" && <FormControlLabel control={<Switch onChange={handleCheck} checked={check}/>} label={check? "Horizontal" : "Vertical" }/>}
+
+            <FormControl size="small" component="fieldset">
+                {/* TextField per gestire il valore dello zIndex */}
+                <FormLabel className="custom-label">Livello</FormLabel>
+                <TextField
+                    type="number"
+                    size="small"
+                    value={zIndex || 1}
+                    onChange={(e) =>
+                        setProp((props) => (props.zIndex = parseInt(e.target.value, 10) || 0))
+                    }
+                >
+                </TextField>
+            </FormControl>
+            {/* Pulsanti rapidi per gestire lo zIndex */}
+            <Stack direction="row" spacing={1} justifyContent="space-between">
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() =>
+                        setProp((props) => (props.zIndex = Math.max((props.zIndex || 1) - 1, 0)))
+                    }
+                >
+                    Manda indietro
+                </Button>
+
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() =>
+                        setProp((props) => (props.zIndex = (props.zIndex || 1) + 1))
+                    }
+                >
+                    Porta avanti
+                </Button>
+            </Stack>
         </div>
     )
 }
@@ -194,6 +233,7 @@ export const ContainerDefaultProps = {
     backgroundColor: "#fffff",
     background: null,
     padding: 0,
+    zIndex: 1,
 }
 
 

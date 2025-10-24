@@ -1,10 +1,11 @@
 import React, { useRef } from "react";
-import { FormControl, FormLabel, TextField, Slider } from "@mui/material";
+import { FormControl, FormLabel, TextField, Slider, Button } from "@mui/material";
 import {useNode} from "@craftjs/core";
 import {HexColorPicker} from "react-colorful";
 import "../App.css";
+import {Stack} from "@mui/system";
 
-export const Button = ({ color = "#0000FF", colorText = "#ffffff",  width = 100, height = 50, children, borderRadius = 8, link }) => {
+export const CraftButton = ({ color = "#0000FF", colorText = "#ffffff",  width = 100, height = 50, children, borderRadius = 8, link, zIndex }) => {
     const {
         connectors: { connect, drag }, id,
         actions: { setProp }, props
@@ -27,6 +28,7 @@ export const Button = ({ color = "#0000FF", colorText = "#ffffff",  width = 100,
                 height: `${height}px`,
                 borderRadius: `${borderRadius}px`,
                 cursor: link ? "pointer" : "default",
+                zIndex: zIndex,
             }}
                 onInput={(e) => setProp((e) => (props.children = e.target.children))}
         >
@@ -50,7 +52,7 @@ export const Button = ({ color = "#0000FF", colorText = "#ffffff",  width = 100,
 };
 
 
-const ButtonSettings = () => {
+const CraftButtonSettings = () => {
     const { actions: { setProp }, props } = useNode((node) => ({
         props: node.data.props
     }));
@@ -117,20 +119,58 @@ const ButtonSettings = () => {
                     setProp(props => props.colorText = color)
                 }} />
             </FormControl>
+
+            <FormControl size="small" component="fieldset">
+                {/* TextField per gestire il valore dello zIndex */}
+                <FormLabel className="custom-label">Livello</FormLabel>
+                <TextField
+                    type="number"
+                    size="small"
+                    value={props.zIndex}
+                    onChange={(e) =>
+                        setProp((props) => (props.zIndex = parseInt(e.target.value, 10) || 0))
+                    }
+                >
+                </TextField>
+            </FormControl>
+
+            {/* Pulsanti rapidi per gestire lo zIndex */}
+            <Stack direction="row" spacing={1} justifyContent="space-between">
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() =>
+                        setProp((props) => (props.zIndex = Math.max((props.zIndex || 1) - 1, 0)))
+                    }
+                >
+                    Manda indietro
+                </Button>
+
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() =>
+                        setProp((props) => (props.zIndex = (props.zIndex || 1) + 1))
+                    }
+                >
+                    Porta avanti
+                </Button>
+            </Stack>
         </div>
     );
 };
 
-Button.craft = {
+CraftButton.craft = {
     props: {
         color: "#1010f1",
         colorText: "#ffffff",
         fontSize: 16,
         width: 100,
         height: 50,
-        children: "Click me"
+        children: "Click me",
+        zIndex: 1
     },
     related: {
-        settings: ButtonSettings
+        settings: CraftButtonSettings
     }
 };

@@ -34,7 +34,6 @@ export const ArrowMovement = ({
         const dx = e.clientX - startPos.x;
         onResize({ width: Math.max(20, width + dx) });
         setStartPos({ x: e.clientX, y: e.clientY });
-        if (onResizeStart) onResizeStart();
     };
 
     const handleMouseUpResize = () => {
@@ -87,7 +86,7 @@ export const ArrowMovement = ({
                 height,
                 transform: `rotate(${rotation}deg)`,
                 transformOrigin: "left center",
-                pointerEvents: "none" // evita conflitti con drag
+                pointerEvents: isResizing || isRotating ? "none" : "auto"
             }}
         >
             {/* Rettangolo tratteggiato solidale alla freccia */}

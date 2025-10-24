@@ -1,6 +1,6 @@
 import React  from "react";
 import { Text } from "./Text";
-import { Button } from "./Button";
+import { CraftButton as Button } from "./Button";
 import {Container, ContainerDefaultProps, ContainerSettings} from "./Container";
 import { Element } from "@craftjs/core";
 import { useNode } from "@craftjs/core";
@@ -51,9 +51,9 @@ CardBottom.craft = {
     }
 }
 
-export const Card = ({backgroundColor, padding = 20, margin = 0}) => {
+export const Card = ({backgroundColor, padding = 20, margin = 0, zIndex}) => {
     return (
-            <Container backgroundColor={backgroundColor} padding={padding} margin={margin} style={{flexDirection:"column"}} >
+            <Container backgroundColor={backgroundColor} padding={padding} margin={margin} zIndex={zIndex} style={{flexDirection:"column"}} >
                 <Element id="text" is={CardTop} canvas> //Canvas è un container che permette di droppare elementi al suo interno in questo caso solo testo
                     <Text text="Title" fontSize={20} /><br/> //Si va a capo per la formattazione
                     <Text text="Subtitle" fontSize={15} />
@@ -69,6 +69,6 @@ export const Card = ({backgroundColor, padding = 20, margin = 0}) => {
 Card.craft = {
     related: {
         settings: ContainerSettings,
-        props: ContainerDefaultProps
+        props: ContainerDefaultProps,
     }
 }

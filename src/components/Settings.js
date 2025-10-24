@@ -50,7 +50,7 @@ export const Settings = () => {
 
 
     return selected ? (
-        <Box className="right-panel">
+        <Box className="settings-panel">
             <Grid container direction="column" spacing={0}>
                 <Grid item>
                     <Box pb={2}>

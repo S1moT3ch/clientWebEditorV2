@@ -1,21 +1,24 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Paper, Grid, Snackbar, Alert } from '@mui/material';
+import {Paper, Grid, Snackbar, Alert, Box} from '@mui/material';
 import "../App.css";
 
 import { Toolbox } from '../components/Toolbox';
 import { Settings } from '../components/Settings';
 import { Container } from '../components/Container';
-import { Button } from '../components/Button';
+import { CraftButton as Button } from '../components/Button';
 import { Text } from '../components/Text';
 import { ImageUpload } from '../components/ImageUpload';
 import { Card, CardTop, CardBottom } from '../components/Card';
 import { ResizableRect } from "../components/ResizableRect";
+import { DraggableChild } from "../components/DraggableChild";
 import { Arrow } from "../components/Arrow";
+import { Photo } from "../components/Photo"
 import { Topbar } from '../components/Topbar';
 import "../App.css";
 
 import { Editor, Frame, Element} from "@craftjs/core";
-import {DraggableItem} from "../components/DraggableItem";
+import {ZIndexStack} from "../components/ZIndexStack";
+import {ScreenshotShortcut} from "../components/ScreenshotButton";
 
 //editor avvolge tutta l'applicazione per fornire contesto ai componenti modificabili
 //definiti nella prop resolver
@@ -145,7 +148,6 @@ export default function App() {
             const top = e.clientY - rect.top;
 
 
-            //Viene fissata la posizione assoluta per free-canvas
             const isFreeCanvas = layout === "free";
             if (isFreeCanvas) {
                 updateNodePosition(nodeId, top, left, false);
@@ -187,21 +189,7 @@ export default function App() {
         container.style.height = `${height}px`;
 
         //Impedisce il cambio layout se ci sono rettangoli o frecce
-        const hasRect = container.querySelector("[data-type='ResizableRect']");
-        const hasArrow = container.querySelector("[data-type='Arrow']");
-        if (hasRect || hasArrow) {
-            if (layout !== "free") {
-                setLayout("free");
-            }
-            setSnackbarMessage("Layout change not allowed: there are Rectangle or Arrow in the canvas");
-            setSnackbarOpen(true);
-            container.style.removeProperty("display");
-            container.childNodes.forEach((el) => {
-                el.style.setProperty("position", "relative");
-            });
-            container.classList.add("free-canvas");
-            return;
-        } else if (container) {
+        if (container) {
             switch (layout) {
                 case "grid":
                     container.style.setProperty("display", "grid");
@@ -235,7 +223,22 @@ export default function App() {
             }
 
             //Passaggio tra layout in modo fluido
-            repositionNodes(layout);
+            const hasSpecial = container.querySelector("[data-type='ResizableRect']") || container.querySelector("[data-type='Arrow']");
+            if (!hasSpecial) {
+                repositionNodes(layout);
+            } else {
+                if (layout !== "free") {
+                    setLayout("free");
+                }
+                setSnackbarMessage("Layout change not allowed: there are Rectangle or Arrow in the canvas");
+                setSnackbarOpen(true);
+                container.style.removeProperty("display");
+                container.childNodes.forEach((el) => {
+                    el.style.setProperty("position", "relative");
+                });
+                container.classList.add("free-canvas");
+                return;
+            }
         }
 
 
@@ -261,47 +264,77 @@ export default function App() {
 
     return (
         <div style={{ display: "flex"}}>
-            <Editor resolver={{ Card, Button, Text, Container, CardTop, CardBottom, ImageUpload, ResizableRect, Arrow, DraggableItem }}>
-                <Grid className="home-grid" container spacing={3} margin={0.5}>
-                    <Grid className="side-grid" item xs>
-                        <Grid display="flex" justifyContent="space-between">
-                            <img src="/LogoPC_full.png" alt="Logo PageCraft" style={{ width: "10vw", height: "auto" }}/>
-                            <h2 className="custom-typography" align="center">WebEditor</h2>
-                        </Grid>
-
-                        <Topbar {...{ layout, setLayout, rows, setRows, columns, setColumns, width, setWidth, height, setHeight }} />
-                        <div onDragStart={getDraggedElementId} onDragOver={(e) => e.preventDefault()} onDrop={handleDrop} onDragEnd={(e) => e.preventDefault()}>
-                            <Frame>
-                                <Element is={Container} padding={10} canvas ref={containerRef}>
-                                    <Card />
-                                    <Button size="medium" variant="contained">Ciao</Button>
-                                    <Text size="small" text="Hi!" />
-                                    <Text size="small" text="It's me!" />
-                                </Element>
-                            </Frame>
-                        </div>
-                    </Grid>
-                    <Grid item xs={2} mr={8}>
-                        <Paper className="custom-paper">
-                            <Toolbox layout={layout} /> {/*Per rendering condizionale*/}
-                            <Settings />
-                        </Paper>
-                    </Grid>
-                </Grid>
-            </Editor>
-
-            {/*Snackbar per notifiche*/}
-            <Snackbar
-                open={snackbarOpen}
-                autoHideDuration={3000}
-                onClose={() => setSnackbarOpen(false)}
-                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            {/* TopBar fissa */}
+            <Grid
+                style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "60px",
+                    backgroundColor: "#dafae6",
+                    boxShadow: "0 2px 5px rgba(0,0,0,0.15)",
+                    zIndex: 9999, // sempre sopra tutto
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "0 20px",
+                }}
             >
-                <Alert onClose={() => setSnackbarOpen(false)} severity="warning" sx={{ width: "100%" }}>
-                    {snackbarMessage}
-                </Alert>
-            </Snackbar>
+                <img src="/LogoPC_full.png" alt="Logo PageCraft" style={{ width: "5vw", height: "auto" }}/>
+                <h2 className="custom-typography" align="center">WebEditor</h2>
+            </Grid>
+            <div
+                style={{
+                    width: "100%",
+                    height: "calc(100vh - 60px)",
+                    overflow: "auto",
+                    marginTop: "60px",
+                    backgroundColor: "#fdfdfd",
+                }}
+            >
+                <Editor resolver={{ Card, Button, Text, Container, CardTop, CardBottom, ImageUpload, ResizableRect, DraggableChild, Arrow, Photo}}>
+                    <Grid className="home-grid" container spacing={3} margin={0.5}>
 
+                        <Grid className="side-grid" item xs>
+
+                            <Topbar {...{ layout, setLayout, rows, setRows, columns, setColumns, width, setWidth, height, setHeight }} />
+                            <div onDragStart={getDraggedElementId} onDragOver={(e) => e.preventDefault()} onDrop={handleDrop} onDragEnd={(e) => e.preventDefault()}>
+                                <Frame>
+                                    <Element is={Container} padding={10} canvas ref={containerRef}>
+                                        <Card />
+                                        <Button size="medium" variant="contained">Ciao</Button>
+                                        <Text size="small" text="Hi!" />
+                                        <Text size="small" text="It's me!" />
+                                    </Element>
+                                </Frame>
+                            </div>
+                        </Grid>
+                        <Grid item xs={2} mr={8}>
+                            <Paper className="custom-paper">
+                                <Toolbox layout={layout} /> {/*Per rendering condizionale*/}
+                                <Settings />
+                                {layout === "free" &&
+                                    <ZIndexStack />
+                                }
+                            </Paper>
+                        </Grid>
+                    </Grid>
+                    <ScreenshotShortcut targetId="ROOT" shortcut="KeyS" ctrl={true} />
+                </Editor>
+
+                {/*Snackbar per notifiche*/}
+                <Snackbar
+                    open={snackbarOpen}
+                    autoHideDuration={3000}
+                    onClose={() => setSnackbarOpen(false)}
+                    anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                >
+                    <Alert onClose={() => setSnackbarOpen(false)} severity="warning" sx={{ width: "100%" }}>
+                        {snackbarMessage}
+                    </Alert>
+                </Snackbar>
+            </div>
         </div>
     );
 }

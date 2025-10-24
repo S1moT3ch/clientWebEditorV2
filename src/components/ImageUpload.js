@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNode } from "@craftjs/core";
-import { Box, Button } from "@mui/material";
+import {Box, Button, FormControl, FormLabel, TextField} from "@mui/material";
 import { Resizable } from "re-resizable";
+import {Stack} from "@mui/system";
 
 // Placeholder + image upload
-export const ImageUpload = ({ src, width = 200, height = 200 }) => {
+export const ImageUpload = ({ src, width = 200, height = 200, zIndex }) => {
     const {
         connectors: { connect, drag }, id,
         actions: { setProp },
@@ -118,7 +119,7 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
                 })
             }}
             style={{
-                zIndex: 0,
+                zIndex: zIndex,
                 position: "relative",
                 cursor: dragging ? "move" : "default", // Cambia il cursore quando si trascina
                 boxShadow: dragging ? "0 0 0 2px rgba(0, 0, 0, 0.2)" : "none", // Aggiungi una guida visiva durante il drag
@@ -198,9 +199,11 @@ export const ImageUpload = ({ src, width = 200, height = 200 }) => {
 const ImageUploadSettings = () => {
     const {
         actions: { setProp },
-        src
+        src,
+        zIndex,
     } = useNode(node => ({
-        src: node.data.props.src
+        src: node.data.props.src,
+        zIndex: node.data.props.zIndex,
     }));
 
     //Funzione caricamento nuova immagine
@@ -230,10 +233,46 @@ const ImageUploadSettings = () => {
                     Upload a new image
                 </Button>
             </label>
+
+            <FormControl size="small" component="fieldset">
+                {/* TextField per gestire il valore dello zIndex */}
+                <FormLabel className="custom-label">Livello</FormLabel>
+                <TextField
+                    type="number"
+                    size="small"
+                    value={zIndex || 1}
+                    onChange={(e) =>
+                        setProp((props) => (props.zIndex = parseInt(e.target.value, 10) || 0))
+                    }
+                >
+                </TextField>
+            </FormControl>
+            {/* Pulsanti rapidi per gestire lo zIndex */}
+            <Stack direction="row" spacing={1} justifyContent="space-between">
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() =>
+                        setProp((props) => (props.zIndex = Math.max((props.zIndex || 1) - 1, 0)))
+                    }
+                >
+                    Manda indietro
+                </Button>
+
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() =>
+                        setProp((props) => (props.zIndex = (props.zIndex || 1) + 1))
+                    }
+                >
+                    Porta avanti
+                </Button>
+            </Stack>
         </div>
     )
 }
 ImageUpload.craft = {
-    props: { src: "", width: 200, height: 200 },
+    props: { src: "", width: 200, height: 200, zIndex: 1 },
     related: { settings: ImageUploadSettings},
 };

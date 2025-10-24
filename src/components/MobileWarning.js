@@ -12,7 +12,8 @@ export default function MobileWarning() {
             textAlign="center"
             bgcolor="#f8f8f8"
         >
-            <Typography variant="h4" color="error">
+            <img src="/LogoPC_full.png" alt="Logo PageCraft" style={{ width: "50vw", height: "auto" }}/>
+            <Typography variant="h4" color="#5488AE">
                 This page cannot be opened on a mobile device
                 <br />
                 Please use a desktop computer
