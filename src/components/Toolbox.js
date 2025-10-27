@@ -29,7 +29,6 @@ import { Card } from "./Card";
 import { ResizableRect } from "./ResizableRect";
 import { DraggableChild } from "./DraggableChild";
 import { Arrow } from "./Arrow";
-import { Photo } from "./Photo"
 import "../App.css";
 
 export const Toolbox = ({ layout }) => {
@@ -231,18 +230,6 @@ export const Toolbox = ({ layout }) => {
                                             </div>
                                         </MaterialButton>
                                     </Grid>
-
-                                    <Grid container direction="column" item>
-                                    <MaterialButton
-                                        className="tool-btn"
-                                        ref={(ref) => connectors.create(ref, <Photo />)}
-                                        variant="contained"
-                                    >
-                                        <div className="tool-btn-content">
-                                            Live Photo
-                                        </div>
-                                    </MaterialButton>
-                                </Grid>
                                 </>
                             )}
                         </Grid>

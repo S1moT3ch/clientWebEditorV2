@@ -56,17 +56,19 @@
     align-items: center;
     flex-direction: column;
     padding: 20px;
-    width: 12rem;
+    width: 15rem;
 
 }
 
+/* Pannello impostazioni*/
 .settings-panel {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     padding: 20px;
-    width: 12rem;
+    width: 15rem;
+    border-top:  1px solid #012ee0;
 
 }
 
@@ -98,33 +100,41 @@
     border-bottom-right-radius: 20px !important;
 }
 
+/* Bottoni del toolbox */
 .tool-btn {
     border-radius: 20px !important;
-    background-color: rgba(84, 136, 174, 0.79) !important;
-    color: white !important;
-    font-weight: bold !important;
-    transition: all 0.3s ease !important;
-    width: 6rem !important;
-    height: 80px !important;
+    background-color: rgba(90, 140, 180, 0.15) !important;
+    color: #2c3e50 !important;
+    font-family: "Inter", "Quicksand", sans-serif !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    transition: all 0.25s ease !important;
+    width: 5.5rem !important;
+    height: 70px !important;
     text-transform: none !important;
     display: flex !important;
-    flex-direction:  column !important;
+    flex-direction: column !important;
     justify-content: center !important;
     align-items: center !important;
+    border: 1px solid rgba(120, 150, 180, 0.25) !important;
+    backdrop-filter: blur(4px) !important;
+    cursor: pointer !important;
 }
 
 .tool-btn:hover {
-    background-color: #3700b3 !important;
-    transform: scale(1.05);
+    background-color: rgba(141, 183, 239, 0.81) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1) !important;
 }
 
 .tool-btn-content {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 2px !important;
-    font-size: 1rem !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: inherit;
 }
 
 /* Layout a due colonne per i bottoni */
@@ -136,27 +146,28 @@
     align-items: center !important;
 }
 
+/* Stile per le scritte */
 .custom-typography {
-    font-size: 2rem;
-    font-weight: bold;
+    font-size: 1.6rem;
+    font-weight: 300;
     text-align: center;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #070853, rgba(0, 34, 255, 0.81), #046ba1);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-family: "Poppins", sans-serif;
+    color: #2c3e50;
+    letter-spacing: 0.5px;
     display: inline-block;
 }
 
 .text-comp {
     font-family: "Quicksand", sans-serif;
+    font-size: 0.9rem;
+    color: #2c3e50;
 }
 
 
 .custom-label{
-    font-size: 18px !important;
-    font-weight: bold !important;
+    font-size: 1rem !important;
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #070853, rgba(0, 34, 255, 0.81), #046ba1);
+    background: #3d406b;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -165,9 +176,9 @@
     position: fixed;
     overflow-y: scroll;
     height: 100vh;
-    width: 20vw;
+    width: 22vw;
     top: 0;
-    background-color: #e9faed !important;
+    background-color: rgba(243, 243, 243, 0.86) !important;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -187,14 +198,25 @@
 
 .home-grid {
     display: flex;
-    flex-wrap: nowrap;
+    width: 98vw !important;
+    height: 50vh !important;
+    margin-left: 0.5px !important;
 }
 
 .side-grid {
-    overflow: hidden;
-    flex-grow: 1;
+    overflow: hidden !important;
+    flex-grow: 1 !important;
     max-width: 79vw !important;
+    margin-top: 0px !important;
 }
+
+/* Header del pannello delle impostazioni*/
+.settings-header{
+    display:  flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 
 
 

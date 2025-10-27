@@ -18,7 +18,6 @@ import "../App.css";
 
 import { Editor, Frame, Element} from "@craftjs/core";
 import {ZIndexStack} from "../components/ZIndexStack";
-import {ScreenshotShortcut} from "../components/ScreenshotButton";
 
 //editor avvolge tutta l'applicazione per fornire contesto ai componenti modificabili
 //definiti nella prop resolver
@@ -272,7 +271,7 @@ export default function App() {
                     left: 0,
                     width: "100%",
                     height: "60px",
-                    backgroundColor: "#dafae6",
+                    backgroundColor: "#e5f8ed",
                     boxShadow: "0 2px 5px rgba(0,0,0,0.15)",
                     zIndex: 9999, // sempre sopra tutto
                     display: "flex",
@@ -281,25 +280,25 @@ export default function App() {
                     padding: "0 20px",
                 }}
             >
-                <img src="/LogoPC_full.png" alt="Logo PageCraft" style={{ width: "5vw", height: "auto" }}/>
+                <img src="/Logo_PC_hor.png" alt="Logo PageCraft" style={{ width: "10vw", height: "auto" }}/>
                 <h2 className="custom-typography" align="center">WebEditor</h2>
             </Grid>
             <div
                 style={{
                     width: "100%",
-                    height: "calc(100vh - 60px)",
+                    height: "calc(100vh - 80px)",
                     overflow: "auto",
                     marginTop: "60px",
                     backgroundColor: "#fdfdfd",
                 }}
             >
-                <Editor resolver={{ Card, Button, Text, Container, CardTop, CardBottom, ImageUpload, ResizableRect, DraggableChild, Arrow, Photo}}>
-                    <Grid className="home-grid" container spacing={3} margin={0.5}>
+                <Editor resolver={{ Card, Button, Text, Container, CardTop, CardBottom, ImageUpload, ResizableRect, DraggableChild, Arrow}}>
+                    <Grid className="home-grid" container spacing={3}>
 
                         <Grid className="side-grid" item xs>
 
                             <Topbar {...{ layout, setLayout, rows, setRows, columns, setColumns, width, setWidth, height, setHeight }} />
-                            <div onDragStart={getDraggedElementId} onDragOver={(e) => e.preventDefault()} onDrop={handleDrop} onDragEnd={(e) => e.preventDefault()}>
+                            <div className="frame" onDragStart={getDraggedElementId} onDragOver={(e) => e.preventDefault()} onDrop={handleDrop} onDragEnd={(e) => e.preventDefault()}>
                                 <Frame>
                                     <Element is={Container} padding={10} canvas ref={containerRef}>
                                         <Card />
@@ -320,7 +319,6 @@ export default function App() {
                             </Paper>
                         </Grid>
                     </Grid>
-                    <ScreenshotShortcut targetId="ROOT" shortcut="KeyS" ctrl={true} />
                 </Editor>
 
                 {/*Snackbar per notifiche*/}

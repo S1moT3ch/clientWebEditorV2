@@ -54,8 +54,8 @@ export const Settings = () => {
             <Grid container direction="column" spacing={0}>
                 <Grid item>
                     <Box pb={2}>
-                        <Grid container alignItems="center" flexWrap="wrap" >
-                            <Typography className="custom-typography" style={{fontSize:"25px", fontWeight:"bold"}}>Selected</Typography>
+                        <Grid className="settings-header" >
+                            <Typography className="custom-typography" style={{fontSize:"25px"}}>Selected</Typography>
                             <Box p={1}>
                                 <Chip size="medium" color="primary" label={selected.name}  />
                             </Box>
