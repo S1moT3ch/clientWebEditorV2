@@ -12,7 +12,6 @@ import { Card, CardTop, CardBottom } from '../components/Card';
 import { ResizableRect } from "../components/ResizableRect";
 import { DraggableChild } from "../components/DraggableChild";
 import { Arrow } from "../components/Arrow";
-import { Photo } from "../components/Photo"
 import { Topbar } from '../components/Topbar';
 import "../App.css";
 

@@ -57,7 +57,7 @@ export const Settings = () => {
                         <Grid className="settings-header" >
                             <Typography className="custom-typography" style={{fontSize:"25px"}}>Selected</Typography>
                             <Box p={1}>
-                                <Chip size="medium" color="primary" label={selected.name}  />
+                                <Chip size="medium" className="chip" label={selected.name}  />
                             </Box>
                         </Grid>
                     </Box>

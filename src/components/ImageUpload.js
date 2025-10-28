@@ -220,55 +220,63 @@ const ImageUploadSettings = () => {
 
     //pannello Settings
     return (
-        <div style={{ padding: "10px" }}>
-            <input
-                type="file"
-                accept="image/"
-                style={{ display: "none" }}
-                id="img-upload-settings-input"
-                onChange={handleImageChange}
-            />
-            <label htmlFor="img-upload-settings-input">
-                <Button variant="contained" component="span">
-                    Upload a new image
-                </Button>
-            </label>
+        <div className="settings-div">
+            <div className="settings-inner-div" style={{ justifyContent:"center" }}>
+                <input
+                    type="file"
+                    accept="image/"
+                    style={{ display: "none" }}
+                    id="img-upload-settings-input"
+                    onChange={handleImageChange}
+                />
+                <label htmlFor="img-upload-settings-input">
+                    <Button variant="outlined" component="span">
+                        Upload a new image
+                    </Button>
+                </label>
+            </div>
 
-            <FormControl size="small" component="fieldset">
-                {/* TextField per gestire il valore dello zIndex */}
-                <FormLabel className="custom-label">Livello</FormLabel>
-                <TextField
-                    type="number"
-                    size="small"
-                    value={zIndex || 1}
-                    onChange={(e) =>
-                        setProp((props) => (props.zIndex = parseInt(e.target.value, 10) || 0))
-                    }
-                >
-                </TextField>
-            </FormControl>
-            {/* Pulsanti rapidi per gestire lo zIndex */}
-            <Stack direction="row" spacing={1} justifyContent="space-between">
-                <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() =>
-                        setProp((props) => (props.zIndex = Math.max((props.zIndex || 1) - 1, 0)))
-                    }
-                >
-                    Manda indietro
-                </Button>
+            <div className="settings-bottom-div">
+                <FormControl size="small" component="fieldset">
+                    {/* TextField per gestire il valore dello zIndex */}
+                    <FormLabel className="custom-label">Level</FormLabel>
+                    <TextField
+                        style={{ width: "14.5rem"}}
+                        type="number"
+                        size="small"
+                        value={ zIndex || 1 }
+                        onChange={(e) =>
+                            setProp((props) => (props.zIndex = parseInt(e.target.value, 10) || 0))
+                        }
+                    >
+                    </TextField>
+                </FormControl>
 
-                <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() =>
-                        setProp((props) => (props.zIndex = (props.zIndex || 1) + 1))
-                    }
-                >
-                    Porta avanti
-                </Button>
-            </Stack>
+                {/* Pulsanti rapidi per gestire lo zIndex */}
+                <Stack direction="row" spacing={1} justifyContent="space-between">
+                    <Button
+                        className="level-button"
+                        variant="outlined"
+                        size="small"
+                        onClick={() =>
+                            setProp((props) => (props.zIndex = Math.max((props.zIndex || 1) - 1, 0)))
+                        }
+                    >
+                        Push downward
+                    </Button>
+
+                    <Button
+                        className="level-button"
+                        variant="outlined"
+                        size="small"
+                        onClick={() =>
+                            setProp((props) => (props.zIndex = (props.zIndex || 1) + 1))
+                        }
+                    >
+                        Push upward
+                    </Button>
+                </Stack>
+            </div>
         </div>
     )
 }

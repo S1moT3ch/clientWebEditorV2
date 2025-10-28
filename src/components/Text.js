@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { useNode } from "@craftjs/core";
 import ContentEditable from "react-contenteditable";
 import {
+    Box,
     Button,
     FormControl,
     FormControlLabel,
@@ -170,80 +171,93 @@ const TextSettings = () => {
     };
 
     return (
-        <>
-            <FormControl fullWidth margin="normal" component="fieldset">
-                <FormLabel component="legend" className="custom-label">Editable</FormLabel>
-                <FormControlLabel
-                    control={<Switch checked={editable} onChange={(_, checked) => setProp(props => props.editable = checked)} />}
-                    label="Enable Editing"
-                />
-            </FormControl>
-            <FormControl size="small" component="fieldset">
-                <FormLabel component="legend" className="custom-label">Font Size</FormLabel>
-                <Slider value={fontSize || 7} step={1} min={8} max={100}
-                        onChange={(_, value) => setProp(props => props.fontSize = value)} />
-            </FormControl>
-            <FormControl fullWidth margin="normal" component="fieldset">
-                <FormLabel className="custom-label">Font Color</FormLabel>
-                <HexColorPicker onChange={color => setProp(props => props.color = color)} />
-            </FormControl>
+        <div className="settings-div">
+            <div className="settings-inner-div">
+                <FormControl fullWidth margin="normal" component="fieldset">
+                    <FormLabel component="legend" className="custom-label">Editable</FormLabel>
+                    <FormControlLabel
+                        control={<Switch checked={editable} onChange={(_, checked) => setProp(props => props.editable = checked)} />}
+                        label="Enable Editing"
+                    />
+                </FormControl>
+            </div>
+            <Box className="setting-slider-box">
+                <FormControl size="small" component="fieldset">
+                    <FormLabel component="legend" className="custom-label">Font Size</FormLabel>
+                    <Slider style={{ marginLeft: "1.3rem" }} value={fontSize || 7} step={1} min={8} max={100}
+                            onChange={(_, value) => setProp(props => props.fontSize = value)} />
+                </FormControl>
+            </Box>
 
-            {/* Form per cambiare font della scrittura */}
-            <FormControl fullWidth margin="normal" component="fieldset">
-                <FormLabel className="custom-label">Font Family</FormLabel>
-                <Select value={fontFamily || "Poppins"} onChange={(e) => handleFontChange(e.target.value)}>
-                    {availableFonts.map(font => (
-                        <MenuItem key={font} value={font}>{font}</MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
+            <div className="settings-bottom-div" style={{ gap: "1px"}}>
 
-            {/* Form per gestire font normale o grassetto */}
-            <FormControl fullWidth margin="normal" component="fieldset">
-                <FormLabel className="custom-label">Font Weight</FormLabel>
-                <Select value={fontWeight} onChange={(e) => setProp(props => props.fontWeight = e.target.value)}>
-                    <MenuItem value="400">Normal</MenuItem>
-                    <MenuItem value="700">Bold</MenuItem>
-                </Select>
-            </FormControl>
+                <FormControl fullWidth margin="normal" component="fieldset">
+                    <FormLabel className="custom-label">Font Color</FormLabel>
+                    <Box style={{ display: "flex", justifyContent: "center" }}>
+                        <HexColorPicker className="settings-colorpicker" onChange={color => setProp(props => props.color = color)} />
+                    </Box>
+                </FormControl>
 
-            <FormControl size="small" component="fieldset">
-                {/* TextField per gestire il valore dello zIndex */}
-                <FormLabel className="custom-label">Livello</FormLabel>
-                <TextField
-                    type="number"
-                    size="small"
-                    value={zIndex || 1}
-                    onChange={(e) =>
-                        setProp((props) => (props.zIndex = parseInt(e.target.value, 10) || 0))
-                    }
-                >
-                </TextField>
-            </FormControl>
+                {/* Form per cambiare font della scrittura */}
+                <FormControl fullWidth margin="normal" component="fieldset">
+                    <FormLabel className="custom-label">Font Family</FormLabel>
+                    <Select value={fontFamily || "Poppins"} onChange={(e) => handleFontChange(e.target.value)}>
+                        {availableFonts.map(font => (
+                            <MenuItem key={font} value={font}>{font}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
 
-            {/* Pulsanti rapidi per gestire lo zIndex */}
-            <Stack direction="row" spacing={1} justifyContent="space-between">
-                <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() =>
-                        setProp((props) => (props.zIndex = Math.max((props.zIndex || 1) - 1, 0)))
-                    }
-                >
-                    Manda indietro
-                </Button>
+                {/* Form per gestire font normale o grassetto */}
+                <FormControl fullWidth margin="normal" component="fieldset">
+                    <FormLabel className="custom-label">Font Weight</FormLabel>
+                    <Select value={fontWeight} onChange={(e) => setProp(props => props.fontWeight = e.target.value)}>
+                        <MenuItem value="400">Normal</MenuItem>
+                        <MenuItem value="700">Bold</MenuItem>
+                    </Select>
+                </FormControl>
 
-                <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() =>
-                        setProp((props) => (props.zIndex = (props.zIndex || 1) + 1))
-                    }
-                >
-                    Porta avanti
-                </Button>
-            </Stack>
-        </>
+                <FormControl size="small" component="fieldset">
+                    {/* TextField per gestire il valore dello zIndex */}
+                    <FormLabel className="custom-label">Livello</FormLabel>
+                    <TextField
+                        style={{ width: "14.5rem", marginBottom: "1rem"}}
+                        type="number"
+                        size="small"
+                        value={zIndex || 1}
+                        onChange={(e) =>
+                            setProp((props) => (props.zIndex = parseInt(e.target.value, 10) || 0))
+                        }
+                    >
+                    </TextField>
+                </FormControl>
+
+                {/* Pulsanti rapidi per gestire lo zIndex */}
+                <Stack direction="row" spacing={1} justifyContent="space-between">
+                    <Button
+                        className="level-button"
+                        variant="outlined"
+                        size="small"
+                        onClick={() =>
+                            setProp((props) => (props.zIndex = Math.max((props.zIndex || 1) - 1, 0)))
+                        }
+                    >
+                        Push downward
+                    </Button>
+
+                    <Button
+                        className="level-button"
+                        variant="outlined"
+                        size="small"
+                        onClick={() =>
+                            setProp((props) => (props.zIndex = (props.zIndex || 1) + 1))
+                        }
+                    >
+                        Push upward
+                    </Button>
+                </Stack>
+            </div>
+        </div>
     );
 };
 

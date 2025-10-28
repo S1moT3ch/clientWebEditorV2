@@ -163,13 +163,60 @@
     color: #2c3e50;
 }
 
-
-.custom-label{
+/* stile per la barra laterale-sezione settings*/
+.custom-label {
     font-size: 1rem !important;
     font-family: 'Poppins', sans-serif;
-    background: #3d406b;
+    background: #031228;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+.chip {
+    background-color: #daeaf8 !important;
+}
+
+.settings-div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.settings-inner-div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.settings-textfield {
+    width: 14.5rem;
+}
+
+.setting-slider-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 12rem;
+}
+
+.settings-colorpicker {
+    width: 6.3rem !important;
+    height:  6.3rem !important;
+}
+
+.settings-bottom-div {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 15rem;
+    justify-content: center;
+}
+
+.level-button {
+    width: 6.5rem !important;
+    font-family: 'Poppins', sans-serif !important;
+    text-transform: none !important;
 }
 
 .custom-paper {
@@ -211,10 +258,15 @@
 }
 
 /* Header del pannello delle impostazioni*/
-.settings-header{
+.settings-header {
     display:  flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.level-stack {
+    width: 12rem;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 }
 
 

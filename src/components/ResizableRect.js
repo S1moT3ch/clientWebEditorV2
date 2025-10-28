@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import { Rnd } from "react-rnd";
 import {useEditor, useNode} from "@craftjs/core";
-import {Button, Checkbox, FormControl, FormControlLabel, FormLabel, Slider, TextField} from "@mui/material";
+import {Box, Button, Checkbox, FormControl, FormControlLabel, FormLabel, Slider, TextField} from "@mui/material";
 import {HexColorPicker} from "react-colorful";
 import {Stack} from "@mui/system";
 
@@ -127,112 +127,124 @@ const ResizableRectSettings = () => {
     };
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-            {/* Form per controllo del colore del blocco */}
-            <FormControl component="fieldset">
-                <FormLabel className="custom-label">Color</FormLabel>
-                <HexColorPicker color={props.backgroundColor || '#000'} onChange={color => {
-                    setProp(props => props.backgroundColor = color)
-                }} />
-            </FormControl>
-            {/* Checkbox per impostare lo sfondo trasparente*/}
-            <FormControlLabel
-                className="custom-label"
-                control={
-                    <Checkbox
-                        checked={props.backgroundColor === "transparent"}
-                        onChange={(e) =>
-                            setProp((props) => {
-                                props.backgroundColor = e.target.checked
-                                    ? "transparent"
-                                    : "#ffe181"
-                            })
-                        }
+        <div className="settings-div">
+            <div className="settings-inner-div" style={{ justifyContent: "center", gap: "0.2rem"}}>
+                {/* Form per controllo del colore del blocco */}
+                <FormControl component="fieldset">
+                    <FormLabel className="custom-label">Color</FormLabel>
+                    <HexColorPicker className="settings-colorpicker" color={props.backgroundColor || '#000'} onChange={color => {
+                        setProp(props => props.backgroundColor = color)
+                    }} />
+                </FormControl>
+                {/* Checkbox per impostare lo sfondo trasparente*/}
+                <FormControlLabel
+                    className="custom-label"
+                    control={
+                        <Checkbox
+                            checked={props.backgroundColor === "transparent"}
+                            onChange={(e) =>
+                                setProp((props) => {
+                                    props.backgroundColor = e.target.checked
+                                        ? "transparent"
+                                        : "#ffe181"
+                                })
+                            }
+                        />
+                    }
+                    label="Sfondo trasparente"
+                />
+                {/* Buttton per upload dell'immagine di sfondo*/}
+                <div style={{ padding: "10px" }}>
+                    <input
+                        type="file"
+                        accept="image/"
+                        style={{ display: "none" }}
+                        id="img-upload-settings-input"
+                        onChange={handleImageChange}
                     />
-                }
-                label="Sfondo trasparente"
-            />
-            {/* Buttton per upload dell'immagine di sfondo*/}
-            <div style={{ padding: "10px" }}>
-                <input
-                    type="file"
-                    accept="image/"
-                    style={{ display: "none" }}
-                    id="img-upload-settings-input"
-                    onChange={handleImageChange}
-                />
-                <label htmlFor="img-upload-settings-input">
-                    <Button variant="contained" component="span" className="custom-label">
-                        Upload a new image
-                    </Button>
-                </label>
+                    <label htmlFor="img-upload-settings-input">
+                        <Button variant="contained" component="span" className="custom-label">
+                            Upload a new image
+                        </Button>
+                    </label>
+                </div>
             </div>
-            {/* Form per controllo del raggio dei bordi */}
-            <FormControl size="small" component="fieldset">
-                <FormLabel className="custom-label">Border Radius</FormLabel>
-                <Slider
-                    defaultValue={props.borderRadius}
-                    min={0}
-                    max={70}
-                    onChange={(_, value) => setProp((props) => (props.borderRadius = value))}
-                />
-            </FormControl>
-            {/* Form per controllo dello spessore del bordo */}
-            <FormControl size="small" component="fieldset">
-                <FormLabel className="custom-label">Border Width</FormLabel>
-                <Slider
-                    value={props.borderWidth || 1}
-                    min={0}
-                    max={20}
-                    onChange={(_, value) => setProp(props => props.borderWidth = value)}
-                />
-            </FormControl>
+            <Box className="setting-slider-box">
+                {/* Form per controllo del raggio dei bordi */}
+                <FormControl size="small" component="fieldset">
+                    <FormLabel className="custom-label">Border Radius</FormLabel>
+                    <Slider
+                        style={{ marginLeft: "1.3rem" }}
+                        defaultValue={props.borderRadius}
+                        min={0}
+                        max={70}
+                        onChange={(_, value) => setProp((props) => (props.borderRadius = value))}
+                    />
+                </FormControl>
+                {/* Form per controllo dello spessore del bordo */}
+                <FormControl size="small" component="fieldset">
+                    <FormLabel className="custom-label">Border Width</FormLabel>
+                    <Slider
+                        style={{ marginLeft: "1.3rem" }}
+                        value={props.borderWidth || 1}
+                        min={0}
+                        max={20}
+                        onChange={(_, value) => setProp(props => props.borderWidth = value)}
+                    />
+                </FormControl>
+            </Box>
 
+            <div className="settings-bottom-div">
             {/* Form per controllo del colore del bordo */}
             <FormControl component="fieldset">
                 <FormLabel className="custom-label">Border Color</FormLabel>
                 <HexColorPicker
+                    className="settings-colorpicker"
                     color={props.borderColor || "#000"}
                     onChange={color => setProp(props => props.borderColor = color)}
                 />
             </FormControl>
 
-            <FormControl size="small" component="fieldset">
-                {/* TextField per gestire il valore dello zIndex*/}
-                <FormLabel className="custom-label">Livello</FormLabel>
-                <TextField
-                    type="number"
-                    size="small"
-                    value={props.zIndex}
-                    onChange={(e) =>
-                        setProp((props) => (props.zIndex = parseInt(e.target.value, 10) || 0))
-                    }
-                >
-                </TextField>
-            </FormControl>
+                <FormControl size="small" component="fieldset">
+                    {/* TextField per gestire il valore dello zIndex */}
+                    <FormLabel className="custom-label">Level</FormLabel>
+                    <TextField
+                        style={{ width: "14.5rem"}}
+                        type="number"
+                        size="small"
+                        value={props.zIndex}
+                        onChange={(e) =>
+                            setProp((props) => (props.zIndex = parseInt(e.target.value, 10) || 0))
+                        }
+                    >
+                    </TextField>
+                </FormControl>
 
-            {/* Pulsanti rapidi per gestire lo zIndex */}
-            <Stack direction="row" spacing={1} justifyContent="space-between">
-                <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() =>
-                        setProp((props) => (props.zIndex = Math.max((props.zIndex || 1) - 1, 0)))
-                    }
-                >
-                    Manda indietro
-                </Button>
+                {/* Pulsanti rapidi per gestire lo zIndex */}
+                <Stack direction="row" spacing={1} justifyContent="space-between">
+                    <Button
+                        className="level-button"
+                        variant="outlined"
+                        size="small"
+                        onClick={() =>
+                            setProp((props) => (props.zIndex = Math.max((props.zIndex || 1) - 1, 0)))
+                        }
+                    >
+                        Push downward
+                    </Button>
 
-                <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() =>
-                        setProp((props) => (props.zIndex = (props.zIndex || 1) + 1))
-                    }
-                >
-                    Porta avanti
-                </Button>
-            </Stack>
+                    <Button
+                        className="level-button"
+                        variant="outlined"
+                        size="small"
+                        onClick={() =>
+                            setProp((props) => (props.zIndex = (props.zIndex || 1) + 1))
+                        }
+                    >
+                        Push upward
+                    </Button>
+                </Stack>
+            </div>
         </div>
     );
 };

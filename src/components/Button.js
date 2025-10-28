@@ -58,12 +58,12 @@ const CraftButtonSettings = () => {
     }));
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", justifyContent:"center" }}>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "20px"}}>
+        <div className="settings-div">
+            <div className="settings-inner-div">
                 <FormControl size="small" component="fieldset">
                     <FormLabel className="custom-label">Text</FormLabel>
                     <TextField
-                        style={{ width: "14.5rem"}}
+                        className="settings-textfield"
                         defaultValue={props.children}
                         onChange={(e) => setProp((props) => (props.children = e.target.value))}
                         multiline
@@ -75,14 +75,14 @@ const CraftButtonSettings = () => {
                 <FormControl size="small" component="fieldset">
                     <FormLabel className="custom-label">Link URL</FormLabel>
                     <TextField
-                        style={{ width: "14.5rem"}}
+                        className="settings-textfield"
                         value={props.link || ""}
                         onChange={(e) => setProp((props) => (props.link = e.target.value))}
                         placeholder="https://example.com"
                     />
                 </FormControl>
             </div>
-            <Box style={{ display: "flex", flexDirection: "column", justifyContent: "center", width: "12rem" }}>
+            <Box className="setting-slider-box">
                 <FormControl size="small" component="fieldset">
                     <FormLabel className="custom-label">Width</FormLabel>
                     <Slider
@@ -115,23 +115,23 @@ const CraftButtonSettings = () => {
                     />
                 </FormControl>
             </Box>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", width: "1 rem"}}>
+            <div className="settings-bottom-div">
                 <FormControl component="fieldset">
                     <FormLabel className="custom-label">Color</FormLabel>
-                    <HexColorPicker style={{ width:100, height: 100 }} color={props.color || '#000'} onChange={color => {
+                    <HexColorPicker className="settings-colorpicker" color={props.color || '#000'} onChange={color => {
                         setProp(props => props.color = color)
                     }} />
                 </FormControl>
                 <FormControl component="fieldset">
                     <FormLabel className="custom-label">Font Color</FormLabel>
-                    <HexColorPicker style={{ width:100, height: 100 }} color={props.colorText || '#000'} onChange={color => {
+                    <HexColorPicker className="settings-colorpicker" color={props.colorText || '#000'} onChange={color => {
                         setProp(props => props.colorText = color)
                     }} />
                 </FormControl>
 
                 <FormControl size="small" component="fieldset">
                     {/* TextField per gestire il valore dello zIndex */}
-                    <FormLabel className="custom-label">Livello</FormLabel>
+                    <FormLabel className="custom-label">Level</FormLabel>
                     <TextField
                         style={{ width: "14.5rem"}}
                         type="number"
@@ -147,23 +147,25 @@ const CraftButtonSettings = () => {
                 {/* Pulsanti rapidi per gestire lo zIndex */}
                 <Stack direction="row" spacing={1} justifyContent="space-between">
                     <Button
+                        className="level-button"
                         variant="outlined"
                         size="small"
                         onClick={() =>
                             setProp((props) => (props.zIndex = Math.max((props.zIndex || 1) - 1, 0)))
                         }
                     >
-                        Manda indietro
+                        Push downward
                     </Button>
 
                     <Button
+                        className="level-button"
                         variant="outlined"
                         size="small"
                         onClick={() =>
                             setProp((props) => (props.zIndex = (props.zIndex || 1) + 1))
                         }
                     >
-                        Porta avanti
+                        Push upward
                     </Button>
                 </Stack>
             </div>

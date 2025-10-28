@@ -1,5 +1,16 @@
 import React, {useEffect, useRef, useState} from "react";
-import {FormControl, Paper, Slider, FormLabel, FormControlLabel, Switch, Input, Button, TextField} from "@mui/material";
+import {
+    FormControl,
+    Paper,
+    Slider,
+    FormLabel,
+    FormControlLabel,
+    Switch,
+    Input,
+    Button,
+    TextField,
+    Box, Select, MenuItem
+} from "@mui/material";
 import Element from "@craftjs/core";
 import {useNode} from "@craftjs/core";
 import {HexColorPicker} from "react-colorful";
@@ -126,91 +137,107 @@ export const ContainerSettings = () => {
 
 
     return (
-        <div>
-            { id !== "ROOT" && data.type.name !== "Card" && <FormControl fullWidth={true} margin="normal" component="fieldset">
-                <FormLabel component="legend" className="custom-label">Background Image</FormLabel>
-                <Button
-                    variant="contained"
-                    component="label"
-                    style={{
-                        width: "100%",
-                        height: "100%",
-                        backgroundColor: "#eee",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                >
-                    <span style={{fontSize: "24px", color: "#aaa"}}>+</span>
-                    <input
-                        type="file"
-                        hidden
-                        onChange={handleImageUpload}
-                    />
-                </Button>
-            </FormControl>}
-            {!imageSrc && (
-                <FormControl fullWidth={true} margin="normal" component="fieldset">
-                    <FormLabel component="legend" className="custom-label">Background Color</FormLabel>
-                    <HexColorPicker color={backgroundColor || '#000'} onChange={color => {
-                        setProp(props => props.backgroundColor = color)
-                    }} />
+        <div className="settings-div">
+            <div className="settings-inner-div" style={{ gap:"0.1rem" }}>
+                { id !== "ROOT" && data.type.name !== "Card" && <FormControl fullWidth={true} component="fieldset">
+                    <FormLabel component="legend" className="custom-label">Background Image</FormLabel>
+                    <Box style={{ display: "flex", justifyContent:"center", alignItems:"center" }}>
+                        <Button
+                            variant="contained"
+                            component="label"
+                            style={{
+                                width: "2rem",
+                                height: "2rem",
+                                backgroundColor: "#e2efff",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                marginTop: "0.2rem",
+                            }}
+                        >
+                            <span style={{fontSize: "24px", color: "#031228"}}>+</span>
+                            <input
+                                type="file"
+                                hidden
+                                onChange={handleImageUpload}
+                            />
+                        </Button>
+                    </Box>
+                </FormControl>}
+
+                {!imageSrc && (
+                    <FormControl fullWidth={true} margin="normal" component="fieldset">
+                        <FormLabel component="legend" className="custom-label">Background Color</FormLabel>
+                        <Box style={{ display: "flex", justifyContent: "center" }}>
+                            <HexColorPicker className="settings-colorpicker" color={backgroundColor || '#000'} onChange={color => {
+                                setProp(props => props.backgroundColor = color)
+                            }} />
+                        </Box>
+                    </FormControl>
+                )}
+            </div>
+            <Box className="setting-slider-box">
+                { id !== "ROOT" && data.type.name !== "Card" && <FormControl fullWidth={true} component="fieldset">
+                    <FormLabel component="legend"  className="custom-label" >Width</FormLabel>
+                    <Slider style={{ marginLeft: "1.3rem" }} defaultValue={ imageSrc ? imageDimensions.width : width } max={5000} onChange={(_, value) => setProp(props => props.width = value)} />
+                </FormControl> }
+                { id !== "ROOT" && data.type.name !== "Card" && <FormControl fullWidth={true} component="fieldset">
+                    <FormLabel component="legend"  className="custom-label" >Height</FormLabel>
+                    <Slider style={{ marginLeft: "1.3rem" }} defaultValue={ imageSrc ? imageDimensions.height : height } max={1000} onChange={(_, value) => setProp(props => props.height = value)} />
                 </FormControl>
-            )}
-            { id !== "ROOT" && data.type.name !== "Card" && <FormControl fullWidth={true} margin="normal" component="fieldset">
-                <FormLabel component="legend"  className="custom-label" >Width</FormLabel>
-                <Slider defaultValue={ imageSrc ? imageDimensions.width : width } max={5000} onChange={(_, value) => setProp(props => props.width = value)} />
-            </FormControl> }
-            { id !== "ROOT" && data.type.name !== "Card" && <FormControl fullWidth={true} margin="normal" component="fieldset">
-            <FormLabel component="legend"  className="custom-label" >Height</FormLabel>
-            <Slider defaultValue={ imageSrc ? imageDimensions.height : height } max={1000} onChange={(_, value) => setProp(props => props.height = value)} />
-        </FormControl>
-            }
-            <FormControl fullWidth={true} margin="normal" component="fieldset">
-                <FormLabel component="legend"  className="custom-label">Padding</FormLabel>
-                <Slider defaultValue={padding} onChange={(_, value) => setProp(props => props.padding = value)} />
-            </FormControl>
-            <FormControl fullWidth={true} margin="normal" component="fieldset">
-                <FormLabel component="legend"  className="custom-label">Margin</FormLabel>
-                <Slider defaultValue={margin} onChange={(_, value) => setProp(props => props.margin = value)} />
-            </FormControl>
-            {id !== "ROOT" && data.type.name !== "Card" && <FormControlLabel control={<Switch onChange={handleCheck} checked={check}/>} label={check? "Horizontal" : "Vertical" }/>}
+                }
+                <FormControl fullWidth={true} component="fieldset">
+                    <FormLabel component="legend"  className="custom-label">Padding</FormLabel>
+                    <Slider style={{ marginLeft: "1.3rem" }} defaultValue={padding} onChange={(_, value) => setProp(props => props.padding = value)} />
+                </FormControl>
+                <FormControl fullWidth={true} component="fieldset">
+                    <FormLabel component="legend"  className="custom-label">Margin</FormLabel>
+                    <Slider style={{ marginLeft: "1.3rem" }}defaultValue={margin} onChange={(_, value) => setProp(props => props.margin = value)} />
+                </FormControl>
+                {id !== "ROOT" && data.type.name !== "Card" && <FormControlLabel control={<Switch onChange={handleCheck} checked={check}/>} label={check? "Horizontal" : "Vertical" }/>}
+            </Box>
+            <div className="settings-bottom-div" style={{ gap: "1px"}}>
 
-            <FormControl size="small" component="fieldset">
-                {/* TextField per gestire il valore dello zIndex */}
-                <FormLabel className="custom-label">Livello</FormLabel>
-                <TextField
-                    type="number"
-                    size="small"
-                    value={zIndex || 1}
-                    onChange={(e) =>
-                        setProp((props) => (props.zIndex = parseInt(e.target.value, 10) || 0))
-                    }
-                >
-                </TextField>
-            </FormControl>
-            {/* Pulsanti rapidi per gestire lo zIndex */}
-            <Stack direction="row" spacing={1} justifyContent="space-between">
-                <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() =>
-                        setProp((props) => (props.zIndex = Math.max((props.zIndex || 1) - 1, 0)))
-                    }
-                >
-                    Manda indietro
-                </Button>
+                <FormControl size="small" component="fieldset">
+                    {/* TextField per gestire il valore dello zIndex */}
+                    <FormLabel className="custom-label">Livello</FormLabel>
+                    <TextField
+                        style={{ width: "14.5rem", marginBottom: "1rem"}}
+                        type="number"
+                        size="small"
+                        value={zIndex || 1}
+                        onChange={(e) =>
+                            setProp((props) => (props.zIndex = parseInt(e.target.value, 10) || 0))
+                        }
+                    >
+                    </TextField>
+                </FormControl>
 
-                <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() =>
-                        setProp((props) => (props.zIndex = (props.zIndex || 1) + 1))
-                    }
-                >
-                    Porta avanti
-                </Button>
-            </Stack>
+                {/* Pulsanti rapidi per gestire lo zIndex */}
+                <Stack direction="row" spacing={1} justifyContent="space-between">
+                    <Button
+                        className="level-button"
+                        variant="outlined"
+                        size="small"
+                        onClick={() =>
+                            setProp((props) => (props.zIndex = Math.max((props.zIndex || 1) - 1, 0)))
+                        }
+                    >
+                        Push downward
+                    </Button>
+
+                    <Button
+                        className="level-button"
+                        variant="outlined"
+                        size="small"
+                        onClick={() =>
+                            setProp((props) => (props.zIndex = (props.zIndex || 1) + 1))
+                        }
+                    >
+                        Push upward
+                    </Button>
+                </Stack>
+            </div>
         </div>
     )
 }
