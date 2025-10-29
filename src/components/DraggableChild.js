@@ -32,7 +32,7 @@ export const DraggableChild = ({ x = 0, y = 0, width = 100, height = 30, childre
     return (
         <Rnd
             ref={rndRef}
-            bounds="parent" // Il draggableItem non può uscire dal rettangolo padre
+            bounds="parent" // Il DraggableChild non può uscire dal rettangolo padre
             size={{ width, height }}
             position={{ x, y }}
             onMouseDown={(e) => e.stopPropagation()}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { useEditor } from "@craftjs/core";
 import { Stack, Typography, Paper } from "@mui/material";
 
@@ -14,7 +14,7 @@ export const ZIndexStack = () => {
             };
         }
 
-        // Ottenimento di tutti i nodi con zIndex
+        // Ottenimento di tutti i nodi e il relativo zIndex
         const nodesArray = Object.values(state.nodes)
             .filter(
                 (node) =>
@@ -69,6 +69,32 @@ export const ZIndexStack = () => {
         if (!text) return "";
         return text.length > 7 ? text.substring(0, 7) + "..." : text;
     };
+
+    // Uso delle frecce su e giù per modificare lo zIndex del nodo selezionato
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (!selected?.id) return;
+
+            if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                e.preventDefault();
+
+                const state = query.getState();
+                const node = state.nodes[selected.id];
+                const currentZ = node?.data?.props?.zIndex ?? 1;
+
+                let newZ = currentZ;
+                if (e.key === "ArrowUp") newZ = currentZ + 1;
+                if (e.key === "ArrowDown") newZ = Math.max(0, currentZ - 1);
+
+                actions.setProp(selected.id, (props) => {
+                    props.zIndex = newZ;
+                });
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [selected, actions, query]);
 
     return (
         <Paper sx={{ p: 2, backgroundColor: "#dedcdc" }}>
