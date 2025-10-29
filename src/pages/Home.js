@@ -230,11 +230,6 @@ export default function App() {
                 }
                 setSnackbarMessage("Layout change not allowed: there are Rectangle or Arrow in the canvas");
                 setSnackbarOpen(true);
-                container.style.removeProperty("display");
-                container.childNodes.forEach((el) => {
-                    el.style.setProperty("position", "relative");
-                });
-                container.classList.add("free-canvas");
                 return;
             }
         }
@@ -296,7 +291,7 @@ export default function App() {
 
                         <Grid className="side-grid" item xs>
 
-                            <Topbar {...{ layout, setLayout, rows, setRows, columns, setColumns, width, setWidth, height, setHeight }} />
+                            <Topbar className="topbar" {...{ layout, setLayout, rows, setRows, columns, setColumns, width, setWidth, height, setHeight }} />
                             <div className="frame" onDragStart={getDraggedElementId} onDragOver={(e) => e.preventDefault()} onDrop={handleDrop} onDragEnd={(e) => e.preventDefault()}>
                                 <Frame>
                                     <Element is={Container} padding={10} canvas ref={containerRef}>
@@ -322,6 +317,7 @@ export default function App() {
 
                 {/*Snackbar per notifiche*/}
                 <Snackbar
+                    style = {{ zIndex: 10000 }}
                     open={snackbarOpen}
                     autoHideDuration={3000}
                     onClose={() => setSnackbarOpen(false)}

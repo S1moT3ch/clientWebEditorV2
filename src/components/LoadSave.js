@@ -446,6 +446,7 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
                 </DialogActions>
             </Dialog>
             <Snackbar
+                style = {{ zIndex: 10000 }}
                 autoHideDuration={1000}
                 anchorOrigin={{ vertical: "top", horizontal:"center"}}
                 open={snackbarMessage}

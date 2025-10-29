@@ -223,7 +223,7 @@
     position: fixed;
     overflow-y: scroll;
     height: 100vh;
-    width: 22vw;
+    width: 19rem;
     top: 0;
     background-color: rgba(243, 243, 243, 0.86) !important;
     display: flex;
@@ -253,8 +253,18 @@
 .side-grid {
     overflow: hidden !important;
     flex-grow: 1 !important;
-    max-width: 79vw !important;
+    width: 79vw !important;
+    max-width: 10000px !important;
     margin-top: 0px !important;
+
+}
+
+.topbar {
+    position: fixed !important;
+}
+
+.frame {
+    overflow: auto !important;
 }
 
 /* Header del pannello delle impostazioni*/

@@ -219,7 +219,7 @@ const TextSettings = () => {
 
                 <FormControl size="small" component="fieldset">
                     {/* TextField per gestire il valore dello zIndex */}
-                    <FormLabel className="custom-label">Livello</FormLabel>
+                    <FormLabel className="custom-label">Level</FormLabel>
                     <TextField
                         style={{ width: "14.5rem", marginBottom: "1rem"}}
                         type="number"

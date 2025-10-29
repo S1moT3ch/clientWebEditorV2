@@ -20,11 +20,10 @@ export const ZIndexStack = () => {
                 (node) =>
                     node.data.name !== "br" &&
                     node.data.name !== "CardTop" &&
-                    node.data.name !== "CardBottom"
+                    node.data.name !== "CardBottom" &&
+                    node.data.name !== "DraggableChild"
             )
-            .sort(
-                (a, b) => (b.data.props.zIndex || 0) - (a.data.props.zIndex || 0)
-            );
+            .sort((a, b) => (b.data.props.zIndex || 0) - (a.data.props.zIndex || 0));
 
         return {
             selected: selectedNode,
@@ -37,12 +36,48 @@ export const ZIndexStack = () => {
         actions.selectNode(id);
     };
 
+    // Funzione per ottenere un'anteprima del testo contenuto in ogni nodo in modo ricorsivo
+    const getTextFromNode = (node, state) => {
+        const { props, nodes } = node.data;
+
+        let textParts = [];
+        if (node.id === "ROOT") return "";
+        if (typeof props.text === "string") textParts.push(props.text);
+        if (typeof props.content === "string") textParts.push(props.content);
+
+        if (typeof props.children === "string") {
+            textParts.push(props.children);
+        }
+
+        if (node.data.nodes && node.data.nodes.length > 0) {
+            node.data.nodes.forEach((childId) => {
+                const childNode = state.nodes[childId];
+                if (childNode) {
+                    textParts.push(getTextFromNode(childNode, state));
+                }
+            });
+        }
+
+        return textParts.join(" ").trim().replace(/\s+/g, " ");
+    };
+
+    const { query } = useEditor();
+
+    // Funzione per generare una breve anteprima testuale
+    const getTextPreview = (node, state) => {
+        const text = getTextFromNode(node, state);
+        if (!text) return "";
+        return text.length > 7 ? text.substring(0, 7) + "..." : text;
+    };
+
     return (
-        <Paper sx={{ p: 2, backgroundColor: "#dedcdc" }} >
+        <Paper sx={{ p: 2, backgroundColor: "#dedcdc" }}>
             <Typography className="custom-typography">Levels</Typography>
             <Stack spacing={1}>
                 {nodesArray.map((node) => {
                     const isSelected = selected?.id === node.id;
+                    const state = query.getState();
+                    const previewText = getTextPreview(node, state);
 
                     return (
                         <Stack
@@ -64,9 +99,17 @@ export const ZIndexStack = () => {
                         >
                             <Typography variant="body2" sx={{ flex: 1 }}>
                                 {node.data.name}
+                                {previewText && (
+                                    <Typography
+                                        variant="caption"
+                                        sx={{ ml:1, color: "text.secondary" }}
+                                    >
+                                        {`(${previewText})`}
+                                    </Typography>
+                                )}
                             </Typography>
 
-                            <Typography size="small" sx={{ width: 55 }}>
+                            <Typography size="small" sx={{ width: 55, textAlign: "right" }}>
                                 {node.data.props.zIndex ?? 1}
                             </Typography>
                         </Stack>

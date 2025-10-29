@@ -128,7 +128,7 @@ export const ArrowMovement = ({
                         style={{
                             position: "absolute",
                             top: -10,
-                            right: -10,
+                            right: -5,
                             transform: "translateX(-50%)",
                             width: 20,
                             height: 20,
