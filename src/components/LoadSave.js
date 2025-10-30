@@ -16,6 +16,8 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
     const [stateToLoad, setStateToLoad] = useState("");
     const [loadMode, setLoadMode] = useState("zipJson"); //scelta del file da caricare: html, zip o json
 
+    const [isRestoringLayout, setIsRestoringLayout] = useState(false);
+
     //Listener globale alla tastiera per gestire le shortcut
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -171,12 +173,68 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
 
         const fileName = file.name.toLowerCase();
 
-        if (fileName.endsWith(".zip")) {
-            // Carica file ZIP
+        const applyRestoredLayout = async (content) => {
             try {
-                //trova il file json nell'archivio ZIP
+                //Ripristina stato Craft.js
+                actions.deserialize(JSON.stringify(content.craftData));
+
+                //Imposta flag per evitare reposizionamento automatico
+                setIsRestoringLayout(true);
+
+                //Aggiorna layout info
+                setLayout(content.layoutInfo.layout);
+                setRows(content.layoutInfo.rows);
+                setColumns(content.layoutInfo.columns);
+                setWidth(content.layoutInfo.width);
+                setHeight(content.layoutInfo.height);
+
+                //Attendi che il DOM si monti completamente
+                await new Promise((resolve) => setTimeout(resolve, 600));
+
+                const root = document.getElementById("ROOT");
+                if (!root) {
+                    setSnackbarMessage("Error: ROOT container not found!");
+                    return;
+                }
+
+                //Applica dimensioni base
+                root.style.width = `${content.layoutInfo.width}px`;
+                root.style.height = `${content.layoutInfo.height}px`;
+
+                //Se layout free, ripristina posizioni assolute
+                if (
+                    content.layoutInfo.layout === "free" &&
+                    Array.isArray(content.layoutInfo.nodePositions)
+                ) {
+                    root.style.position = "relative";
+                    root.classList.add("free-canvas");
+                    root.style.removeProperty("display");
+
+                    content.layoutInfo.nodePositions.forEach(({ id, top, left }) => {
+                        const el = document.getElementById(id) || document.querySelector(`[data-craft-node="${id}"]`);
+                        if (el) {
+                            el.style.position = "absolute";
+                            el.style.top = top.endsWith("px") ? top : `${top}px`;
+                            el.style.left = left.endsWith("px") ? left : `${left}px`;
+                        }
+                    });
+                }
+
+                setSnackbarMessage("Layout loaded successfully!");
+                setDialogOpen?.(false);
+            } catch (error) {
+                console.error("Error applying layout:", error);
+                setSnackbarMessage("Error restoring layout");
+            }
+        };
+
+        //Caso ZIP
+        if (fileName.endsWith(".zip")) {
+            try {
                 const zip = await JSZip.loadAsync(file);
-                const jsonFileName = Object.keys(zip.files).find(name => name.endsWith(".json"));
+                const jsonFileName = Object.keys(zip.files).find((name) =>
+                    name.endsWith(".json")
+                );
 
                 if (!jsonFileName) {
                     setSnackbarMessage("No .json file found in ZIP archive");
@@ -185,107 +243,34 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
 
                 const jsonContent = await zip.file(jsonFileName).async("string");
                 const content = JSON.parse(jsonContent);
-
-                //deserializza lo stato di Craft.js e le info di layout. Poi ripristina lo stato del canvas caricato, posizionando gli elementi, se in free-layout, nella posizione in cui sono stati salvati
-                actions.deserialize(JSON.stringify(content.craftData)); // Ripristina Craft.js
-                setLayout(content.layoutInfo.layout);
-                setRows(content.layoutInfo.rows);
-                setColumns(content.layoutInfo.columns);
-                setWidth(content.layoutInfo.width);
-                setHeight(content.layoutInfo.height);
-
-                document.getElementById("ROOT").style.width = `${content.layoutInfo.width}px`;
-                document.getElementById("ROOT").style.height = `${content.layoutInfo.height}px`;
-                console.log(layout);
-
-                if (content.layoutInfo.layout === "free" && content.layoutInfo.nodePositions) {
-                    await new Promise((resolve) => setTimeout(resolve, 500));
-
-                    content.layoutInfo.nodePositions.forEach(({ id, top, left }) => {
-                        const el = document.getElementById(id);
-                        if (el) {
-                            el.style.position = "relative";
-                            el.style.top = top;
-                            el.style.left = left;
-                        }
-                    });
-
-                    content.layoutInfo.nodePositions.forEach(({ id, top, left }) => {
-                        const el = document.querySelector(`[data-craft-node="${id}"]`);
-                        if (el) {
-                            el.style.position = "relative";
-                            el.style.top = top;
-                            el.style.left = left;
-                        }
-                    });
-                }
-
-
-                setLoadMode("zipJson");
-                setSnackbarMessage("Layout successfully loaded from ZIP!");
-                setDialogOpen(false);
-
+                await applyRestoredLayout(content);
             } catch (error) {
-                console.error(error);
+                console.error("Error loading ZIP:", error);
                 setSnackbarMessage("Error loading ZIP file");
             }
+        }
 
-        } else if (fileName.endsWith(".json")) {
-            // Carica file JSON
+        //Caso JSON
+        else if (fileName.endsWith(".json")) {
             const reader = new FileReader();
             reader.onload = async (event) => {
                 try {
                     const content = JSON.parse(event.target.result);
-
-                    //deserializza lo stato di Craft.js e le info di layout. Poi ripristina lo stato del canvas caricato
-                    actions.deserialize(JSON.stringify(content.craftData)); // Ripristina Craft.js
-                    setLayout(content.layoutInfo.layout);
-                    setRows(content.layoutInfo.rows);
-                    setColumns(content.layoutInfo.columns);
-                    setWidth(content.layoutInfo.width);
-                    setHeight(content.layoutInfo.height);
-
-                    document.getElementById("ROOT").style.width = `${content.layoutInfo.width}px`;
-                    document.getElementById("ROOT").style.height = `${content.layoutInfo.height}px`;
-
-                    if (content.layoutInfo.layout === "free" && content.layoutInfo.nodePositions) {
-                        await new Promise((resolve) => setTimeout(resolve, 500)); // piccolo delay per sicurezza
-
-                        content.layoutInfo.nodePositions.forEach(({ id, top, left }) => {
-                            const el = document.getElementById(id);
-                            if (el) {
-                                el.style.position = "relative";
-                                el.style.top = top;
-                                el.style.left = left;
-                            }
-                        });
-
-                        content.layoutInfo.nodePositions.forEach(({ id, top, left }) => {
-                            const el = document.querySelector(`[data-craft-node="${id}"]`);
-                            if (el) {
-                                el.style.position = "relative";
-                                el.style.top = top;
-                                el.style.left = left;
-                            }
-                        });
-                    }
-
-
-                    setLoadMode("zipJson");
-                    setSnackbarMessage("Layout successfully loaded from ZIP!");
-                    setDialogOpen(false);
-
+                    await applyRestoredLayout(content);
                 } catch (error) {
-                    console.error(error);
-                    setSnackbarMessage("Error: Invalid JSON file");
+                    console.error("Error loading JSON:", error);
+                    setSnackbarMessage("Invalid JSON file");
                 }
             };
             reader.readAsText(file);
+        }
 
-        } else {
+        //Formato non supportato
+        else {
             setSnackbarMessage("Unsupported file format. Please upload a .zip or .json file");
         }
     };
+
 
 
     //Funzione helper per attendere il caricamento di tutte le immagini

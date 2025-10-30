@@ -35,6 +35,7 @@ export default function App() {
 
     const [hasSpecialElements, setHasSpecialElements] = useState(false);
 
+
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
 
@@ -52,64 +53,109 @@ export default function App() {
         }
     };
 
-    //Funzione per gestire il passaggio tra un layout ed un altro in modo fluido
+    // Funzione per gestire il passaggio tra un layout e un altro in modo fluido
     const repositionNodes = (newLayout) => {
-
         const container = document.getElementById("ROOT");
         if (!container) return;
 
         const hasRect = container.querySelector("[data-type='ResizableRect']");
         const hasArrow = container.querySelector("[data-type='Arrow']");
-
         if (hasRect || hasArrow) {
             console.warn("Skipping repositionNodes: special elements present");
             return;
         }
 
         const nodes = Array.from(container.children);
-        if(!nodes.length) return;
+        if (!nodes.length) return;
 
-        switch(newLayout) {
+        if (newLayout === "free") {
+            const containerRect = container.getBoundingClientRect();
+
+            nodes.forEach((node) => {
+
+                const rect = node.getBoundingClientRect();
+
+                const absTop = rect.top - containerRect.top + container.scrollTop;
+                const absLeft = rect.left - containerRect.left + container.scrollLeft;
+
+                // salva per eventuale ripristino futuro
+                node.dataset.absTop = `${absTop}px`;
+                node.dataset.absLeft = `${absLeft}px`;
+
+                // rimuovi margin/transform che possono spostare la visuale
+                node.style.margin = "0";
+                node.style.removeProperty("transform");
+            });
+
+
+            container.style.position = container.style.position || "relative";
+            container.style.removeProperty("display");
+            container.classList.add("free-canvas");
+
+            nodes.forEach((node) => {
+                node.style.position = "absolute";
+                node.style.top = node.dataset.absTop || "0px";
+                node.style.left = node.dataset.absLeft || "0px";
+            });
+
+            return;
+        }
+
+        if (["row", "column", "grid"].includes(newLayout)) {
+            // rimuovi proprietà che possono interferire con il nuovo flow
+            nodes.forEach((node) => {
+                node.style.removeProperty("top");
+                node.style.removeProperty("left");
+                node.style.removeProperty("position");
+                node.style.removeProperty("margin");
+                node.style.removeProperty("transform");
+            });
+
+        }
+
+        switch (newLayout) {
             case "row":
-                nodes.forEach((node, i) => {
+                container.style.display = "flex";
+                container.style.flexDirection = "row";
+                container.classList.remove("free-canvas");
+                nodes.forEach((node) => {
                     node.style.position = "relative";
-                    node.style.top = "0px";
-                    node.style.left = "0px";
-                    node.style.marginLeft = "10px"
+                    node.style.margin = "5px";
                 });
                 break;
+
             case "column":
-                nodes.forEach((node, i) => {
+                container.style.display = "flex";
+                container.style.flexDirection = "column";
+                container.classList.remove("free-canvas");
+                nodes.forEach((node) => {
                     node.style.position = "relative";
-                    node.style.top = "0px";
-                    node.style.left = "0px";
-                    node.style.marginLeft = "10px"
+                    node.style.margin = "5px 0";
                 });
                 break;
+
             case "grid":
-                const cols = columns || 2
+                const cols = container.dataset.cols || 2;
+                container.style.display = "grid";
+                container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+                container.style.gridAutoRows = "auto";
+                container.classList.remove("free-canvas");
                 nodes.forEach((node, i) => {
                     node.style.position = "relative";
                     const row = Math.floor(i / cols) + 1;
-                    const col = Math.floor(i % cols) +1;
+                    const col = (i % cols) + 1;
                     node.style.gridRowStart = row;
                     node.style.gridColumnStart = col;
                 });
                 break;
-            case "free":
-                container.style.removeProperty("display");
-                container.childNodes.forEach((el) => {
-                    el.style.setProperty("position", "relative");
-                });
-                container.classList.add("free-canvas");
-                break;
+
             default:
-                nodes.forEach((node) => {
-                    node.style.position = "relative";
-                });
-                break
+                break;
         }
-    }
+    };
+
+
+
 
     function getDraggedElementId(e) {
         const currentEl = e.target.id;
@@ -183,58 +229,48 @@ export default function App() {
 
     useEffect(() => {
         const container = document.getElementById("ROOT");
+        if (!container) return;
+
+        // aggiorna dimensioni del container
         container.style.width = `${width}px`;
         container.style.height = `${height}px`;
 
-        //Impedisce il cambio layout se ci sono rettangoli o frecce
-        if (container) {
-            switch (layout) {
-                case "grid":
-                    container.style.setProperty("display", "grid");
-                    container.style.setProperty("grid-template-rows", `repeat(${rows}, 1fr)`);
-                    container.style.setProperty("grid-template-columns", `repeat(${columns}, 1fr)`);
-                    if (container.classList.contains("free-canvas")) {
-                        container.classList.remove("free-canvas");
-                    }
-                    break;
-                case "column":
-                    container.style.setProperty("display", "flex");
-                    container.style.setProperty("flex-direction", "column");
-                    if (container.classList.contains("free-canvas")) {
-                        container.classList.remove("free-canvas");
-                    }
-                    break;
-                case "row":
-                    container.style.setProperty("display", "flex");
-                    container.style.setProperty("flex-direction", "row");
-                    if (container.classList.contains("free-canvas")) {
-                        container.classList.remove("free-canvas");
-                    }
-                    break;
-                default:
-                    container.style.removeProperty("display");
-                    container.childNodes.forEach((el) => {
-                        el.style.setProperty("position", "relative");
-                    });
-                    container.classList.add("free-canvas");
-                    break;
-            }
+        // verifica elementi speciali
+        const hasSpecial = container.querySelector("[data-type='ResizableRect']") ||
+            container.querySelector("[data-type='Arrow']");
 
-            //Passaggio tra layout in modo fluido
-            const hasSpecial = container.querySelector("[data-type='ResizableRect']") || container.querySelector("[data-type='Arrow']");
-            if (!hasSpecial) {
-                repositionNodes(layout);
-            } else {
-                if (layout !== "free") {
-                    setLayout("free");
-                }
-                setSnackbarMessage("Layout change not allowed: there are Rectangle or Arrow in the canvas");
-                setSnackbarOpen(true);
-                return;
-            }
+        if (hasSpecial && layout !== "free") {
+            setLayout("free");
+            setSnackbarMessage("Layout change not allowed: there are Rectangle or Arrow in the canvas");
+            setSnackbarOpen(true);
+            return;
         }
 
+        if (layout === "grid") {
+            container.style.display = "grid";
+            container.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+            container.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
+            container.classList.remove("free-canvas");
+            container.dataset.cols = columns;
+        } else if (layout === "column") {
+            container.style.display = "flex";
+            container.style.flexDirection = "column";
+            container.classList.remove("free-canvas");
+        } else if (layout === "row") {
+            container.style.display = "flex";
+            container.style.flexDirection = "row";
+            container.classList.remove("free-canvas");
+        } else if (layout === "free") {
 
+        } else {
+            container.style.removeProperty("display");
+            container.classList.remove("free-canvas");
+        }
+
+        // aspetta il frame successivo per garantire che il layout corrente sia applicato al DOM
+        requestAnimationFrame(() => {
+            repositionNodes(layout);
+        });
     }, [layout, rows, columns, width, height]);
 
     //UseEffect con un eventListener per notificare agli utenti al refresh o alla chiusura della pagina
