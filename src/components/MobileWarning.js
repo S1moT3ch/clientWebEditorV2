@@ -12,6 +12,7 @@ export default function MobileWarning() {
             height="100vh"
             textAlign="center"
             bgcolor="#f8f8f8"
+            style={{ gap: "1.8rem" }}
         >
             <img src="/LogoPC_full.png" alt="Logo PageCraft" style={{ width: "50vw", height: "auto" }}/>
             <Typography variant="h4" color="#5488AE">

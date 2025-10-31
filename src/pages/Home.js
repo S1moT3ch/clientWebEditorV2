@@ -241,7 +241,7 @@ export default function App() {
 
         if (hasSpecial && layout !== "free") {
             setLayout("free");
-            setSnackbarMessage("Layout change not allowed: there are Rectangle or Arrow in the canvas");
+            setSnackbarMessage("Layout change not allowed: there are Rectangles or Arrows in the canvas");
             setSnackbarOpen(true);
             return;
         }

@@ -64,11 +64,13 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
 
             if (isFreeLayout) {
                 const nodePositions = Array.from(rootElement.children).map((node) => {
+                    const craftId = node.getAttribute("data-craft-node");
                     const computed = window.getComputedStyle(node);
                     return {
-                        id: node.id,
+                        id: node.id || craftId,
                         top: computed.top,
                         left: computed.left,
+                        transform: node.style.transform || "none",
                     };
                 });
 
@@ -83,8 +85,8 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
 
                         return {
                             id: craftId,
-                            top: `${rect.top - parentRect.top}px`,
-                            left: `${rect.left - parentRect.left}px`,
+                            top: `${rect.top - parentRect.top + rootElement.scrollTop}px`,
+                            left: `${rect.left - parentRect.left + rootElement.scrollLeft}px`,
                         };
                     });
 
@@ -210,12 +212,19 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
                     root.classList.add("free-canvas");
                     root.style.removeProperty("display");
 
-                    content.layoutInfo.nodePositions.forEach(({ id, top, left }) => {
+                    content.layoutInfo.nodePositions.forEach(({ id, top, left, transform}) => {
+
                         const el = document.getElementById(id) || document.querySelector(`[data-craft-node="${id}"]`);
                         if (el) {
+
+                            const offsetTop = parseFloat(top);
+                            const offsetLeft = parseFloat(left);
+
+                            el.style.top = `${offsetTop}px`;
+                            el.style.left = `${offsetLeft}px`;
                             el.style.position = "absolute";
-                            el.style.top = top.endsWith("px") ? top : `${top}px`;
-                            el.style.left = left.endsWith("px") ? left : `${left}px`;
+                            el.style.margin = "0";
+                            el.style.transform = transform;
                         }
                     });
                 }
@@ -269,36 +278,6 @@ export const LoadSave = ({ layout, setLayout, rows, setRows, columns, setColumns
         else {
             setSnackbarMessage("Unsupported file format. Please upload a .zip or .json file");
         }
-    };
-
-
-
-    //Funzione helper per attendere il caricamento di tutte le immagini
-    const waitForImagesToLoad = () => {
-        return new Promise((resolve) => {
-            const images = document.querySelectorAll("#ROOT img");
-            const totalImages = images.length;
-            if (totalImages === 0) return resolve();
-
-            let loadedCount = 0;
-            images.forEach((img) => {
-                if (img.complete) {
-                    loadedCount++;
-                } else {
-                    img.onload = () => {
-                        loadedCount++;
-                        if (loadedCount === totalImages) resolve();
-                    };
-                    img.onerror = () => {
-                        loadedCount++;
-                        if (loadedCount === totalImages) resolve();
-                    };
-                }
-            });
-
-            // Nel caso tutte le immagini siano già caricate
-            if (loadedCount === totalImages) resolve();
-        });
     };
 
     return (

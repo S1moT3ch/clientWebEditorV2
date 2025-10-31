@@ -12,7 +12,13 @@ export const Arrow = ({ color, strokeWidth, length, rotation, x, y, width = 100,
         isSelected: state.events.selected,
     }));
 
+
+
     const { actions: { setOptions }, query } = useEditor()
+
+    const {
+        id: nodeId, // ID Craft.js del nodo
+    } = useNode();
 
     const ref = useRef(null);
 
@@ -51,6 +57,7 @@ export const Arrow = ({ color, strokeWidth, length, rotation, x, y, width = 100,
 
     return (
         <Rnd
+            data-craft-node={nodeId}
             data-type="Arrow"
             bounds="parent"
             size={{ width, height }}

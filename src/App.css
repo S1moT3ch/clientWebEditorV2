@@ -223,10 +223,11 @@
     position: fixed;
     overflow-y: scroll;
     height: 100vh;
-    width: 19rem;
+    width: 20rem;
     top: 0;
     background-color: rgba(243, 243, 243, 0.86) !important;
     display: flex;
+    align-items: center !important;
     flex-direction: column;
     align-items: center;
 }
@@ -245,7 +246,7 @@
 
 .home-grid {
     display: flex;
-    width: 98vw !important;
+    width: 96vw !important;
     height: 50vh !important;
     margin-left: 0.5px !important;
 }
@@ -256,7 +257,6 @@
     width: 79vw !important;
     max-width: 10000px !important;
     margin-top: 0px !important;
-
 }
 
 .topbar {

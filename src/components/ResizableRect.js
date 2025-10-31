@@ -29,6 +29,10 @@ export const ResizableRect = ({ width, height, backgroundColor, src, borderRadiu
         }
     });
 
+    const {
+        id: nodeId, // ID Craft.js del nodo
+    } = useNode();
+
     const [disableDrag, setDisableDrag] = useState(false);
 
     // Se è selezionato un nodo di tipo Text rendi il rettangolo non draggabile, altrimenti il contrario
@@ -43,6 +47,7 @@ export const ResizableRect = ({ width, height, backgroundColor, src, borderRadiu
     return (
         //Uso di React-rnd
         <Rnd
+            data-craft-node={nodeId}
             disableDragging={disableDrag} //Disabilita il drag se si sta interagebdo con i figli
             data-type="ResizableRect"
             size={{ width, height }}
