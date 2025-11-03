@@ -12,11 +12,13 @@ import { Card, CardTop, CardBottom } from '../components/Card';
 import { ResizableRect } from "../components/ResizableRect";
 import { DraggableChild } from "../components/DraggableChild";
 import { Arrow } from "../components/Arrow";
+import { Photo } from "../components/Photo";
 import { Topbar } from '../components/Topbar';
 import "../App.css";
 
 import { Editor, Frame, Element} from "@craftjs/core";
 import {ZIndexStack} from "../components/ZIndexStack";
+import {ScreenshotShortcut} from "../components/ScreenshotButton";
 
 //editor avvolge tutta l'applicazione per fornire contesto ai componenti modificabili
 //definiti nella prop resolver
@@ -322,7 +324,7 @@ export default function App() {
                     backgroundColor: "#fdfdfd",
                 }}
             >
-                <Editor resolver={{ Card, Button, Text, Container, CardTop, CardBottom, ImageUpload, ResizableRect, DraggableChild, Arrow}}>
+                <Editor resolver={{ Card, Button, Text, Container, CardTop, CardBottom, ImageUpload, ResizableRect, DraggableChild, Arrow, Photo}}>
                     <Grid className="home-grid" container spacing={3}>
 
                         <Grid className="side-grid" item xs>
@@ -349,6 +351,7 @@ export default function App() {
                             </Paper>
                         </Grid>
                     </Grid>
+                    <ScreenshotShortcut targetId="ROOT" shortcut="KeyS" ctrl={true} />
                 </Editor>
 
                 {/*Snackbar per notifiche*/}

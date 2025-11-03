@@ -19,6 +19,7 @@ import ImageIcon from "@mui/icons-material/Image";
 import ViewAgendaIcon from "@mui/icons-material/ViewAgenda";
 import ViewDay from "@mui/icons-material/ViewDay";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 
 import { Element, useEditor } from "@craftjs/core";
 import { ImageUpload } from "./ImageUpload";
@@ -29,6 +30,7 @@ import { Card } from "./Card";
 import { ResizableRect } from "./ResizableRect";
 import { DraggableChild } from "./DraggableChild";
 import { Arrow } from "./Arrow";
+import { Photo } from "./Photo";
 import "../App.css";
 
 export const Toolbox = ({ layout }) => {
@@ -227,6 +229,19 @@ export const Toolbox = ({ layout }) => {
                                             <div className="tool-btn-content">
                                                 <ArrowRightAltIcon />
                                                 Arrow
+                                            </div>
+                                        </MaterialButton>
+                                    </Grid>
+
+                                    <Grid container direction="column" item>
+                                        <MaterialButton
+                                            className="tool-btn"
+                                            ref={(ref) => connectors.create(ref, <Photo />)}
+                                            variant="contained"
+                                        >
+                                            <div className="tool-btn-content">
+                                                <PhotoCameraIcon />
+                                                Photo
                                             </div>
                                         </MaterialButton>
                                     </Grid>

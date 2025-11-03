@@ -48,7 +48,7 @@ export const ResizableRect = ({ width, height, backgroundColor, src, borderRadiu
         //Uso di React-rnd
         <Rnd
             data-craft-node={nodeId}
-            disableDragging={disableDrag} //Disabilita il drag se si sta interagebdo con i figli
+            disableDragging={disableDrag} //Disabilita il drag se si sta interagendo con i figli
             data-type="ResizableRect"
             size={{ width, height }}
             position={{ x, y }}

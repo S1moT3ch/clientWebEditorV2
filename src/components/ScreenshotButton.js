@@ -8,9 +8,28 @@ export const ScreenshotShortcut = ({ targetId = "ROOT", shortcut = "KeyA", ctrl 
         if (!element) return;
 
         try {
-            const canvas = await html2canvas(element, { backgroundColor: null });
-            const dataURL = canvas.toDataURL("image/png");
 
+            const originalScrollY = window.scrollY;
+            const originalScrollX = window.scrollX;
+
+            window.scrollTo(0, 0);
+
+            const rect = element.getBoundingClientRect();
+            const canvas = await html2canvas(element, {
+                backgroundColor: "#ffffff",
+                scale: 2, //aumenta la qualità
+                useCORS: true,
+                removeContainer: true,
+                logging: false,
+                scrollX: -window.scrollX,
+                scrollY: -window.scrollY,
+                width: rect.width,
+                height: rect.height,
+            });
+
+            window.scrollTo(originalScrollX, originalScrollY);
+
+            const dataURL = canvas.toDataURL("image/png");
             const link = document.createElement("a");
             link.href = dataURL;
             link.download = "screenshot.png";
@@ -30,7 +49,7 @@ export const ScreenshotShortcut = ({ targetId = "ROOT", shortcut = "KeyA", ctrl 
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, []);
+    }, [shortcut, ctrl]);
 
-    return null; // Non renderizza nulla
+    return null;
 };
