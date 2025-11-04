@@ -16,7 +16,6 @@ export const ScreenshotShortcut = ({ targetId = "ROOT", shortcut = "KeyA", ctrl 
 
             const rect = element.getBoundingClientRect();
             const canvas = await html2canvas(element, {
-                backgroundColor: "#ffffff",
                 scale: 2, //aumenta la qualità
                 useCORS: true,
                 removeContainer: true,

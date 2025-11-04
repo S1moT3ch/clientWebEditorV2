@@ -16,7 +16,8 @@ import {
     Box
 } from "@mui/material";
 import {HexColorPicker} from "react-colorful";
-import {Stack} from "@mui/system";
+import { saveAs } from "file-saver";
+import {Stack, textTransform} from "@mui/system";
 import AddPhoto from '@mui/icons-material/AddAPhoto';
 import Brightness1Icon from '@mui/icons-material/Brightness1';
 
@@ -154,6 +155,7 @@ export const PhotoSettings = () => {
         canvas.height = video.videoHeight;
         canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
         const dataUrl = canvas.toDataURL("image/png");
+        saveAs(dataUrl, `photo.png`);
 
         setProp(p => {
             p.src = dataUrl;
@@ -172,6 +174,11 @@ export const PhotoSettings = () => {
         if (stream) stream.getTracks().forEach(track => track.stop());
         setCameraOpen(false);
     };
+
+    const downloadPhoto = () => {
+        const image = props.src
+        saveAs(image, "image.png");
+    }
 
     return (
         <div className="settings-div">
@@ -265,6 +272,19 @@ export const PhotoSettings = () => {
                         onChange={color => setProp(props => props.borderColor = color)}
                     />
                 </FormControl>
+
+                <Button
+                    style={{
+                        textTransform: "none",
+                        width:"14rem",
+                        height:"auto",
+                    }}
+                    variant="outlined"
+                    size="small"
+                    onClick={downloadPhoto}
+                >
+                    Download the photo
+                </Button>
 
                 <FormControl size="small" component="fieldset">
                     {/* TextField per gestire il valore dello zIndex */}
