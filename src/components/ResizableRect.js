@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import { Rnd } from "react-rnd";
 import {useEditor, useNode} from "@craftjs/core";
 import {Box, Button, Checkbox, FormControl, FormControlLabel, FormLabel, Slider, TextField} from "@mui/material";
@@ -8,11 +8,11 @@ import {Stack} from "@mui/system";
 //Componente Rettangolo. Esso è ridimensionabile e ruotabile
 export const ResizableRect = ({ width, height, backgroundColor, src, borderRadius, borderWidth, borderColor, x, y, zIndex, children}) => {
     const {
-        connectors: { connect, drag },
+        connectors: { connect },
         actions: { setProp }
     } = useNode();
 
-    const { connectors, actions, selected } = useEditor((state, query) => {
+    const {selected } = useEditor((state, query) => {
         const [currentNodeId] = state.events.selected;
         let selected;
 

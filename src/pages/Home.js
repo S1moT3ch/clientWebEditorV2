@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import {Paper, Grid, Snackbar, Alert, Box} from '@mui/material';
+import {Paper, Grid, Snackbar, Alert} from '@mui/material';
 import "../App.css";
 
 import { Toolbox } from '../components/Toolbox';
@@ -32,9 +32,6 @@ export default function App() {
     const [columns, setColumns] = useState(2);
     const [width, setWidth] = useState("fit-content");
     const [height, setHeight] = useState("fit-content");
-
-    const [hasSpecialElements, setHasSpecialElements] = useState(false);
-
 
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");

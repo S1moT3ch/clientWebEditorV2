@@ -32,7 +32,7 @@ import { Arrow } from "./Arrow";
 import "../App.css";
 
 export const Toolbox = ({ layout }) => {
-    const { connectors, actions, selected } = useEditor((state, query) => {
+    const { connectors, selected } = useEditor((state, query) => {
         const [currentNodeId] = state.events.selected;
         let selected;
 
