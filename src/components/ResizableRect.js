@@ -156,7 +156,7 @@ const ResizableRectSettings = () => {
                             }
                         />
                     }
-                    label="Sfondo trasparente"
+                    label="Transparent background"
                 />
                 {/* Buttton per upload dell'immagine di sfondo*/}
                 <div style={{ padding: "10px" }}>
